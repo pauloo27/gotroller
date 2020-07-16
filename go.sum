@@ -4,5 +4,7 @@ github.com/Pauloo27/go-mpris v0.0.0-20200716195957-22be0351ce84 h1:skNoRq60mAbGZ
 github.com/Pauloo27/go-mpris v0.0.0-20200716195957-22be0351ce84/go.mod h1:Bp7LmGYphh0aq8rCIOrB2sckiY5M+6N3oc6Jt6FlqNs=
 github.com/Pauloo27/go-mpris v0.0.0-20200716205627-88fab95ff55b h1:9V8Q7wvv4gHnA24y4PmH+Y1DRTlLhvBH1F5ea09mu4Q=
 github.com/Pauloo27/go-mpris v0.0.0-20200716205627-88fab95ff55b/go.mod h1:Bp7LmGYphh0aq8rCIOrB2sckiY5M+6N3oc6Jt6FlqNs=
+github.com/Pauloo27/go-mpris v0.0.1 h1:w6dz55n1yGqnrQyvpXIRgD6SPsaj7cjr4plNHw0G5jI=
+github.com/Pauloo27/go-mpris v0.0.1/go.mod h1:Bp7LmGYphh0aq8rCIOrB2sckiY5M+6N3oc6Jt6FlqNs=
 github.com/godbus/dbus v4.1.0+incompatible h1:WqqLRTsQic3apZUK9qC5sGNfXthmPXzUZ7nQPrNITa4=
 github.com/godbus/dbus v4.1.0+incompatible/go.mod h1:/YcGZj5zSblfDWMMoOzV4fas9FZnQYTkDnsGvmh2Grw=
