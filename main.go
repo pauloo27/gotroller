@@ -30,7 +30,10 @@ func printToPolybar(player *mpris.Player) {
 	} else {
 		log.Fatalf("Invalid playback status %s / %s", status, mpris.PlaybackPaused)
 	}
-	fmt.Printf("%s\n", icon)
+
+	metadata := player.GetMetadata()
+
+	fmt.Printf("%s %v\n", icon, metadata["xesam:title"].Value())
 }
 
 func main() {
