@@ -28,6 +28,8 @@ func printToPolybar(player *mpris.Player) {
 		return
 	}
 
+	identity := player.GetIdentity()
+
 	status := player.GetPlaybackStatus()
 	var playPause string
 
@@ -47,19 +49,31 @@ func printToPolybar(player *mpris.Player) {
 	prevButton := PolybarActionButton{
 		Index:   1,
 		Display: "",
-		Command: fmt.Sprintf("playerctl -p %s previous", player.GetIdentity()),
+		Command: fmt.Sprintf("playerctl -p %s previous", identity),
 	}
 
 	togglePauseButton := PolybarActionButton{
 		Index:   1,
 		Display: icon,
-		Command: fmt.Sprintf("playerctl -p %s %s", player.GetIdentity(), playPause),
+		Command: fmt.Sprintf("playerctl -p %s %s", identity, playPause),
 	}
 
 	nextButton := PolybarActionButton{
 		Index:   1,
 		Display: "",
-		Command: fmt.Sprintf("playerctl -p %s next", player.GetIdentity()),
+		Command: fmt.Sprintf("playerctl -p %s next", identity),
+	}
+
+	volumeUpButton := PolybarActionButton{
+		Index:   4,
+		Display: fmt.Sprintf(" %.f%%", player.GetVolume()*100),
+		Command: fmt.Sprintf("playerctl -p %s volume 0.05+", identity),
+	}
+
+	volumeButton := PolybarActionButton{
+		Index:   5,
+		Display: volumeUpButton.String(),
+		Command: fmt.Sprintf("playerctl -p %s volume 0.05-", identity),
 	}
 
 	metadata := player.GetMetadata()
@@ -74,7 +88,7 @@ func printToPolybar(player *mpris.Player) {
 		displayName += artist
 	}
 
-	fmt.Printf("%s %s %s %s\n", displayName, prevButton.String(), togglePauseButton.String(), nextButton.String())
+	fmt.Printf("%s %s %s %s %s\n", displayName, prevButton.String(), togglePauseButton.String(), nextButton.String(), volumeButton.String())
 }
 
 func main() {
