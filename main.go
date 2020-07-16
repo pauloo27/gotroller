@@ -44,15 +44,21 @@ func printToPolybar(player *mpris.Player) {
 		log.Fatalf("Invalid playback status %s / %s", status, mpris.PlaybackPaused)
 	}
 
-	metadata := player.GetMetadata()
+	prevButton := PolybarActionButton{
+		Index:   1,
+		Display: "<",
+		Command: fmt.Sprintf("playerctl -p %s previous", player.GetIdentity()),
+	}
 
 	togglePauseButton := PolybarActionButton{
-		Index:   1,
+		Index:   2,
 		Display: icon,
 		Command: fmt.Sprintf("playerctl -p %s %s", player.GetIdentity(), playPause),
 	}
 
-	fmt.Printf("%s %v\n", togglePauseButton.String(), metadata["xesam:title"].Value())
+	metadata := player.GetMetadata()
+
+	fmt.Printf("%s %s %v\n", prevButton.String(), togglePauseButton.String(), metadata["xesam:title"].Value())
 }
 
 func main() {
