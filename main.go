@@ -18,7 +18,7 @@ type PolybarActionButton struct {
 }
 
 func (a PolybarActionButton) String() string {
-	return fmt.Sprintf("%%{A%d:%s:} %s %%{A}", a.Index, a.Command, a.Display)
+	return fmt.Sprintf("%%{A%d:%s:}%s%%{A}", a.Index, a.Command, a.Display)
 }
 
 func printToPolybar(player *mpris.Player) {
@@ -46,19 +46,35 @@ func printToPolybar(player *mpris.Player) {
 
 	prevButton := PolybarActionButton{
 		Index:   1,
-		Display: "<",
+		Display: "",
 		Command: fmt.Sprintf("playerctl -p %s previous", player.GetIdentity()),
 	}
 
 	togglePauseButton := PolybarActionButton{
-		Index:   2,
+		Index:   1,
 		Display: icon,
 		Command: fmt.Sprintf("playerctl -p %s %s", player.GetIdentity(), playPause),
 	}
 
+	nextButton := PolybarActionButton{
+		Index:   1,
+		Display: "",
+		Command: fmt.Sprintf("playerctl -p %s next", player.GetIdentity()),
+	}
+
 	metadata := player.GetMetadata()
 
-	fmt.Printf("%s %s %v\n", prevButton.String(), togglePauseButton.String(), metadata["xesam:title"].Value())
+	title := metadata["xesam:title"].Value().(string)
+
+	displayName := title
+
+	if metadata["xesam:artist"].Value() != nil {
+		artist := metadata["xesam:artist"].Value().([]string)[0]
+		displayName += " from "
+		displayName += artist
+	}
+
+	fmt.Printf("%s %s %s %s\n", displayName, prevButton.String(), togglePauseButton.String(), nextButton.String())
 }
 
 func main() {
