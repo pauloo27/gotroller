@@ -8,9 +8,18 @@ import (
 	"github.com/godbus/dbus"
 )
 
-const pauseIcon = ""
-const playIcon = ""
+const pausedIcon = ""
+const playingIcon = ""
 const stoppedIcon = ""
+
+type PolybarActionButton struct {
+	Index            uint
+	Display, Command string
+}
+
+func (a PolybarActionButton) String() string {
+	return fmt.Sprintf("%%{A%d:%s:} %s %%{A}", a.Index, a.Command, a.Display)
+}
 
 func printToPolybar(player *mpris.Player) {
 	icon := stoppedIcon
@@ -20,20 +29,30 @@ func printToPolybar(player *mpris.Player) {
 	}
 
 	status := player.GetPlaybackStatus()
+	var playPause string
 
 	if status == mpris.PlaybackPlaying {
-		icon = pauseIcon
+		icon = playingIcon
+		playPause = "pause"
 	} else if status == mpris.PlaybackPaused {
-		icon = playIcon
+		icon = pausedIcon
+		playPause = "play"
 	} else if status == mpris.PlaybackStopped {
 		icon = stoppedIcon
+		playPause = "play"
 	} else {
 		log.Fatalf("Invalid playback status %s / %s", status, mpris.PlaybackPaused)
 	}
 
 	metadata := player.GetMetadata()
 
-	fmt.Printf("%s %v\n", icon, metadata["xesam:title"].Value())
+	togglePauseButton := PolybarActionButton{
+		Index:   1,
+		Display: icon,
+		Command: fmt.Sprintf("playerctl -p %s %s", player.GetIdentity(), playPause),
+	}
+
+	fmt.Printf("%s %v\n", togglePauseButton.String(), metadata["xesam:title"].Value())
 }
 
 func main() {
