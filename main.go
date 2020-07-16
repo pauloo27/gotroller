@@ -25,6 +25,8 @@ func printToPolybar(player *mpris.Player) {
 		icon = pauseIcon
 	} else if status == mpris.PlaybackPaused {
 		icon = playIcon
+	} else if status == mpris.PlaybackStopped {
+		icon = stoppedIcon
 	} else {
 		log.Fatalf("Invalid playback status %s / %s", status, mpris.PlaybackPaused)
 	}
