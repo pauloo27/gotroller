@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"strings"
 
 	"github.com/Pauloo27/go-mpris"
 	"github.com/godbus/dbus"
@@ -21,14 +24,14 @@ func (a PolybarActionButton) String() string {
 	return fmt.Sprintf("%%{A%d:%s:}%s%%{A}", a.Index, a.Command, a.Display)
 }
 
-func printToPolybar(player *mpris.Player) {
+func printToPolybar(name string, player *mpris.Player) {
 	icon := stoppedIcon
 	if player == nil {
 		fmt.Printf("%s\n", icon)
 		return
 	}
 
-	identity := player.GetIdentity()
+	identity := strings.Split(name, ".")[3]
 
 	status := player.GetPlaybackStatus()
 	var playPause string
@@ -76,6 +79,12 @@ func printToPolybar(player *mpris.Player) {
 		Command: fmt.Sprintf("playerctl -p %s volume 0.05-", identity),
 	}
 
+	playerButton := PolybarActionButton{
+		Index:   1,
+		Display: "",
+		Command: "gotroller player | dmenu > /dev/shm/gotroller-player.txt",
+	}
+
 	metadata := player.GetMetadata()
 
 	title := metadata["xesam:title"].Value().(string)
@@ -88,7 +97,7 @@ func printToPolybar(player *mpris.Player) {
 		displayName += artist
 	}
 
-	fmt.Printf("%s %s %s %s %s\n", displayName, prevButton.String(), togglePauseButton.String(), nextButton.String(), volumeButton.String())
+	fmt.Printf("%s %s %s %s %s %s\n", playerButton.String(), displayName, prevButton.String(), togglePauseButton.String(), nextButton.String(), volumeButton.String())
 }
 
 func main() {
@@ -97,13 +106,46 @@ func main() {
 		panic(err)
 	}
 	names, err := mpris.List(conn)
+
 	if err != nil {
 		panic(err)
 	}
+
+	if len(os.Args) >= 2 {
+		if os.Args[1] == "player" {
+			for _, player := range names {
+				fmt.Println(player)
+			}
+			return
+		}
+	}
+
 	if len(names) == 0 {
-		printToPolybar(nil)
+		printToPolybar("", nil)
 		return
 	}
-	player := mpris.New(conn, names[0])
-	printToPolybar(player)
+
+	selectedPlayer := ""
+
+	buffer, err := ioutil.ReadFile("/dev/shm/gotroller-player.txt")
+	if err == nil {
+		selectedPlayer = strings.TrimSuffix(string(buffer), "\n")
+	}
+
+	var playerName string
+	if selectedPlayer != "" {
+		for _, name := range names {
+			if name == selectedPlayer {
+				playerName = name
+				break
+			}
+		}
+	}
+
+	if playerName == "" {
+		playerName = names[0]
+	}
+
+	player := mpris.New(conn, playerName)
+	printToPolybar(playerName, player)
 }
