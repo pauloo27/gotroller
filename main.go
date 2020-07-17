@@ -49,9 +49,15 @@ func printToPolybar(name string, player *mpris.Player) {
 		log.Fatalf("Invalid playback status %s / %s", status, mpris.PlaybackPaused)
 	}
 
+	restartButton := PolybarActionButton{
+		Index:   3,
+		Display: "",
+		Command: fmt.Sprintf("playerctl -p %s position 0", identity),
+	}
+
 	prevButton := PolybarActionButton{
 		Index:   1,
-		Display: "",
+		Display: restartButton.String(),
 		Command: fmt.Sprintf("playerctl -p %s previous", identity),
 	}
 
