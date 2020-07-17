@@ -102,9 +102,19 @@ func printToPolybar(name string, player *mpris.Player) {
 	displayName := title
 
 	if metadata["xesam:artist"].Value() != nil {
-		artist := metadata["xesam:artist"].Value().([]string)[0]
+		var artistName string
+
+		artist := metadata["xesam:artist"].Value()
+
+		switch artist.(type) {
+		case string:
+			artistName = artist.(string)
+		case []string:
+			artistName = artist.([]string)[0]
+		}
+
 		displayName += " from "
-		displayName += artist
+		displayName += artistName
 	}
 
 	fmt.Printf("%s %s %s %s %s %s\n", playerButton.String(), displayName, prevButton.String(), togglePauseButton.String(), nextButton.String(), volumeButton.String())
