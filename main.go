@@ -106,11 +106,11 @@ func printToPolybar(name string, player *mpris.Player) {
 
 		artist := metadata["xesam:artist"].Value()
 
-		switch artist.(type) {
+		switch artist := artist.(type) {
 		case string:
-			artistName = artist.(string)
+			artistName = artist
 		case []string:
-			artistName = artist.([]string)[0]
+			artistName = artist[0]
 		}
 
 		displayName += " from "
