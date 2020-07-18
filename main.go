@@ -25,9 +25,15 @@ func (a PolybarActionButton) String() string {
 }
 
 func printToPolybar(name string, player *mpris.Player) {
+	playerButton := PolybarActionButton{
+		Index:   1,
+		Display: "",
+		Command: "gotroller player | dmenu > /dev/shm/gotroller-player.txt",
+	}
+
 	icon := stoppedIcon
 	if player == nil {
-		fmt.Printf("%s\n", icon)
+		fmt.Printf("%s %s\n", playerButton.String(), icon)
 		return
 	}
 
@@ -85,12 +91,6 @@ func printToPolybar(name string, player *mpris.Player) {
 		Command: fmt.Sprintf("playerctl -p %s volume 0.05-", identity),
 	}
 
-	playerButton := PolybarActionButton{
-		Index:   1,
-		Display: "",
-		Command: "gotroller player | dmenu > /dev/shm/gotroller-player.txt",
-	}
-
 	metadata := player.GetMetadata()
 
 	title := metadata["xesam:title"].Value().(string)
@@ -133,6 +133,7 @@ func main() {
 
 	if len(os.Args) >= 2 {
 		if os.Args[1] == "player" {
+			fmt.Println("Disable")
 			for _, player := range names {
 				fmt.Println(player)
 			}
@@ -150,6 +151,11 @@ func main() {
 	buffer, err := ioutil.ReadFile("/dev/shm/gotroller-player.txt")
 	if err == nil {
 		selectedPlayer = strings.TrimSuffix(string(buffer), "\n")
+	}
+
+	if selectedPlayer == "Disable" {
+		printToPolybar("Disable", nil)
+		return
 	}
 
 	var playerName string
