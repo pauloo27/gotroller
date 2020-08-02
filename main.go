@@ -14,14 +14,18 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-const pausedIcon = ""
-const playingIcon = ""
-const stoppedIcon = ""
+const (
+	pausedIcon  = ""
+	playingIcon = ""
+	stoppedIcon = ""
+
+	selectedPlayerPath = "/dev/shm/gotroller-player.txt"
+)
 
 func getSelectedPlayer() string {
 	selectedPlayer := ""
 
-	buffer, err := ioutil.ReadFile("/dev/shm/gotroller-player.txt")
+	buffer, err := ioutil.ReadFile(selectedPlayerPath)
 	if err == nil {
 		selectedPlayer = strings.TrimSuffix(string(buffer), "\n")
 	}
@@ -75,6 +79,18 @@ func showGUI(conn *dbus.Conn) {
 	}
 
 	comboBox.SetActiveID(playerName)
+
+	comboBox.Connect("changed", func() {
+		newSelection := comboBox.GetActiveText()
+		go func() {
+			data := []byte(newSelection)
+			err := ioutil.WriteFile(selectedPlayerPath, data, 0644)
+			handleFatal(err)
+			fmt.Println("Player changed to", newSelection)
+			os.Exit(0)
+		}()
+	})
+
 	player := mpris.New(conn, playerName)
 
 	metadata := player.GetMetadata()
@@ -110,12 +126,16 @@ func showGUI(conn *dbus.Conn) {
 		lastPosition = percent
 	}
 
-	go func() {
-		for {
-			glib.IdleAdd(updateProgress)
-			time.Sleep(1 * time.Second)
-		}
-	}()
+	canSeeLength := metadata["mpris:length"].Value() != nil
+
+	if canSeeLength {
+		go func() {
+			for {
+				glib.IdleAdd(updateProgress)
+				time.Sleep(1 * time.Second)
+			}
+		}()
+	}
 
 	progressBar.Connect("value-changed", func() {
 		if lastPosition == 0 {
@@ -129,7 +149,9 @@ func showGUI(conn *dbus.Conn) {
 
 	grid.Attach(comboBox, 0, 0, 1, 1)
 	grid.Attach(label, 0, 1, 1, 1)
-	grid.Attach(progressBar, 0, 2, 10, 1)
+	if canSeeLength {
+		grid.Attach(progressBar, 0, 2, 10, 1)
+	}
 
 	win.Add(grid)
 
@@ -151,7 +173,7 @@ func printToPolybar(name string, player *mpris.Player) {
 	playerButton := PolybarActionButton{
 		Index:   1,
 		Display: "",
-		Command: "gotroller player | dmenu > /dev/shm/gotroller-player.txt",
+		Command: "gotroller gui",
 	}
 
 	icon := stoppedIcon
