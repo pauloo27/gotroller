@@ -101,7 +101,7 @@ func showGUI(conn *dbus.Conn) {
 	var lastPosition float64
 
 	updateProgress := func() {
-		length := float64(metadata["mpris:length"].Value().(int64))
+		length := player.GetLength()
 		position := float64(player.GetPosition())
 
 		percent := 100.0 * position / length
@@ -123,7 +123,7 @@ func showGUI(conn *dbus.Conn) {
 		}
 		currentPosition := progressBar.GetValue()
 		if currentPosition-lastPosition >= 1 || currentPosition-lastPosition <= -1 {
-			player.SetPosition(100000)
+			player.SetPosition(currentPosition * player.GetLength() / 100)
 		}
 	})
 
