@@ -147,15 +147,24 @@ func showGUI(conn *dbus.Conn) {
 		}
 	})
 
+	closeButton, err := gtk.ButtonNewWithLabel("Close")
+	handleFatal(err)
+
+	closeButton.Connect("clicked", func() {
+		fmt.Println("Closed!")
+		os.Exit(0)
+	})
+
 	grid.Attach(comboBox, 0, 0, 1, 1)
 	grid.Attach(label, 0, 1, 1, 1)
 	if canSeeLength {
 		grid.Attach(progressBar, 0, 2, 10, 1)
 	}
+	grid.Attach(closeButton, 5, 3, 1, 1)
 
 	win.Add(grid)
 
-	win.SetDefaultSize(400, 150)
+	win.SetDefaultSize(400, 100)
 	win.ShowAll()
 	gtk.Main()
 }
