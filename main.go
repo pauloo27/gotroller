@@ -6,14 +6,137 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/Pauloo27/go-mpris"
 	"github.com/godbus/dbus"
+	"github.com/gotk3/gotk3/glib"
+	"github.com/gotk3/gotk3/gtk"
 )
 
 const pausedIcon = ""
 const playingIcon = ""
 const stoppedIcon = ""
+
+func getSelectedPlayer() string {
+	selectedPlayer := ""
+
+	buffer, err := ioutil.ReadFile("/dev/shm/gotroller-player.txt")
+	if err == nil {
+		selectedPlayer = strings.TrimSuffix(string(buffer), "\n")
+	}
+
+	return selectedPlayer
+}
+
+func handleFatal(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func showGUI(conn *dbus.Conn) {
+	gtk.Init(nil)
+	win, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
+	handleFatal(err)
+
+	_, err = win.Connect("destroy", func() {
+		fmt.Println("Closed")
+		gtk.MainQuit()
+	})
+	handleFatal(err)
+
+	win.SetTitle("Gotroller")
+	grid, err := gtk.GridNew()
+	handleFatal(err)
+
+	selectedPlayer := getSelectedPlayer()
+
+	players, err := mpris.List(conn)
+	handleFatal(err)
+
+	if len(players) == 0 {
+		fmt.Println("No players found =(")
+		os.Exit(0)
+		return
+	}
+
+	comboBox, err := gtk.ComboBoxTextNew()
+
+	handleFatal(err)
+
+	playerName := players[0]
+
+	for _, player := range players {
+		comboBox.Append(player, player)
+		if player == selectedPlayer {
+			playerName = player
+		}
+	}
+
+	comboBox.SetActiveID(playerName)
+	player := mpris.New(conn, playerName)
+
+	metadata := player.GetMetadata()
+
+	title := ""
+	titleData := metadata["xesam:title"].Value()
+	if titleData != nil {
+		title = titleData.(string)
+	}
+
+	if len(title) > 35 {
+		title = title[0:32] + "..."
+	}
+
+	label, err := gtk.LabelNew(title)
+	handleFatal(err)
+
+	progressBar, err := gtk.ScaleNewWithRange(gtk.ORIENTATION_HORIZONTAL, 0, 100, 1)
+	handleFatal(err)
+
+	progressBar.SetHExpand(true)
+	progressBar.SetDrawValue(false)
+
+	var lastPosition float64
+
+	updateProgress := func() {
+		length := float64(metadata["mpris:length"].Value().(int64))
+		position := float64(player.GetPosition())
+
+		percent := 100.0 * position / length
+
+		progressBar.SetValue(percent)
+		lastPosition = percent
+	}
+
+	go func() {
+		for {
+			glib.IdleAdd(updateProgress)
+			time.Sleep(1 * time.Second)
+		}
+	}()
+
+	progressBar.Connect("value-changed", func() {
+		if lastPosition == 0 {
+			return
+		}
+		currentPosition := progressBar.GetValue()
+		if currentPosition-lastPosition >= 1 || currentPosition-lastPosition <= -1 {
+			player.SetPosition(100000)
+		}
+	})
+
+	grid.Attach(comboBox, 0, 0, 1, 1)
+	grid.Attach(label, 0, 1, 1, 1)
+	grid.Attach(progressBar, 0, 2, 10, 1)
+
+	win.Add(grid)
+
+	win.SetDefaultSize(400, 150)
+	win.ShowAll()
+	gtk.Main()
+}
 
 type PolybarActionButton struct {
 	Index            uint
@@ -142,6 +265,10 @@ func main() {
 				fmt.Println(player)
 			}
 			return
+		} else if os.Args[1] == "gui" {
+			fmt.Println("Opening GUI")
+			showGUI(conn)
+			return
 		}
 	}
 
@@ -150,12 +277,7 @@ func main() {
 		return
 	}
 
-	selectedPlayer := ""
-
-	buffer, err := ioutil.ReadFile("/dev/shm/gotroller-player.txt")
-	if err == nil {
-		selectedPlayer = strings.TrimSuffix(string(buffer), "\n")
-	}
+	selectedPlayer := getSelectedPlayer()
 
 	if selectedPlayer == "Disable" {
 		printToPolybar("Disable", nil)
