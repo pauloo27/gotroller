@@ -57,6 +57,7 @@ func showGUI(conn *dbus.Conn) {
 	handleFatal(err)
 
 	selectedPlayer := getSelectedPlayer()
+	enabled := selectedPlayer != "Disable"
 
 	players, err := mpris.List(conn)
 	handleFatal(err)
@@ -73,6 +74,8 @@ func showGUI(conn *dbus.Conn) {
 
 	playerName := players[0]
 
+	comboBox.Append("Disable", "Disable")
+
 	for _, player := range players {
 		comboBox.Append(player, player)
 		if player == selectedPlayer {
@@ -80,7 +83,11 @@ func showGUI(conn *dbus.Conn) {
 		}
 	}
 
-	comboBox.SetActiveID(playerName)
+	if enabled {
+		comboBox.SetActiveID(playerName)
+	} else {
+		comboBox.SetActiveID("Disable")
+	}
 
 	comboBox.Connect("changed", func() {
 		newSelection := comboBox.GetActiveText()
@@ -158,9 +165,11 @@ func showGUI(conn *dbus.Conn) {
 	})
 
 	grid.Attach(comboBox, 0, 0, 1, 1)
-	grid.Attach(label, 0, 1, 1, 1)
-	if canSeeLength {
-		grid.Attach(progressBar, 0, 2, 10, 1)
+	if enabled {
+		grid.Attach(label, 0, 1, 1, 1)
+		if canSeeLength {
+			grid.Attach(progressBar, 0, 2, 10, 1)
+		}
 	}
 	grid.Attach(closeButton, 5, 3, 1, 1)
 
@@ -183,7 +192,7 @@ func (a PolybarActionButton) String() string {
 func printToPolybar(name string, player *mpris.Player) {
 	playerButton := PolybarActionButton{
 		Index:   1,
-		Display: "",
+		Display: "",
 		Command: "gotroller gui",
 	}
 
@@ -255,8 +264,8 @@ func printToPolybar(name string, player *mpris.Player) {
 		title = titleData.(string)
 	}
 
-	if len(title) > 35 {
-		title = title[0:32] + "..."
+	if len(title) > 25 {
+		title = title[0:22] + "..."
 	}
 
 	displayName := title
