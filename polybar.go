@@ -30,7 +30,7 @@ func printToPolybar(name string, player *mpris.Player) {
 		return
 	}
 
-	identity := strings.Split(name, ".")[3]
+	identity := strings.TrimPrefix(name, "org.mpris.MediaPlayer2.")
 
 	status := player.GetPlaybackStatus()
 	var playPause string
