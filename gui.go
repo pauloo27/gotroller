@@ -179,7 +179,7 @@ func showGUI(conn *dbus.Conn) {
 	if artUrl != "" {
 		if strings.HasPrefix(artUrl, "http") {
 			setupCacheFolder()
-			artUrl, err = downloadAlbumArt(artUrl)
+			artUrl, err = downloadAlbumArt(metadata["xesam:url"].Value().(string), artUrl)
 			if err != nil {
 				fmt.Println("Cannot download album art")
 			}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"os/user"
 )
@@ -20,8 +21,13 @@ func setupCacheFolder() {
 	}
 }
 
-func downloadAlbumArt(artUrl string) (string, error) {
-	outputFile := fmt.Sprintf("%s/.album", cacheFolder)
+func downloadAlbumArt(mediaUrl, artUrl string) (string, error) {
+	outputFile := fmt.Sprintf("%s/.album-%s", cacheFolder, url.QueryEscape(mediaUrl))
+
+	if _, err := os.Stat(outputFile); err == nil {
+		fmt.Println("Cache found")
+		return outputFile, nil
+	}
 
 	res, err := http.Get(artUrl)
 	if err != nil {
