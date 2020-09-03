@@ -10,8 +10,9 @@ import (
 
 	"github.com/Pauloo27/go-mpris"
 	"github.com/godbus/dbus"
+	"github.com/gotk3/gotk3/gdk"
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
-  "github.com/gotk3/gotk3/glib"
 )
 
 func getSelectedPlayer() string {
@@ -45,7 +46,11 @@ func showGUI(conn *dbus.Conn) {
 	handleFatal(err)
 
 	win.SetTitle("Gotroller")
-	grid, err := gtk.GridNew()
+
+	mainBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 1)
+	handleFatal(err)
+
+	contentBox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 1)
 	handleFatal(err)
 
 	selectedPlayer := getSelectedPlayer()
@@ -156,18 +161,51 @@ func showGUI(conn *dbus.Conn) {
 		os.Exit(0)
 	})
 
-	grid.Attach(comboBox, 0, 0, 1, 1)
+	mainBox.PackEnd(contentBox, true, true, 1)
+
 	if enabled {
-		grid.Attach(label, 0, 1, 1, 1)
+		contentBox.PackStart(label, true, true, 1)
 		if canSeeLength {
-			grid.Attach(progressBar, 0, 2, 10, 1)
+			contentBox.PackStart(progressBar, true, true, 1)
 		}
 	}
-	grid.Attach(closeButton, 5, 3, 1, 1)
 
-	win.Add(grid)
+	artUrl := metadata["mpris:artUrl"].Value().(string)
+	if artUrl != "" {
+		if strings.HasPrefix(artUrl, "http") {
+			setupCacheFolder()
+			artUrl, err = downloadAlbumArt(artUrl)
+			if err != nil {
+				fmt.Println("Cannot download album art")
+			}
+		}
 
-	win.SetDefaultSize(400, 100)
+		// Check one more time because it may change in the if above
+		if artUrl != "" {
+			albumImagePix, err := gdk.PixbufNewFromFileAtScale(artUrl, 150, 150, true)
+			if err != nil {
+				fmt.Println("Cannot load album art")
+			} else {
+				image, err := gtk.ImageNewFromPixbuf(albumImagePix)
+				if err != nil {
+					fmt.Println("Cannot load album art (2)")
+				} else {
+					mainBox.PackStart(image, true, true, 0)
+				}
+			}
+		}
+	}
+
+	bottomBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 1)
+	handleFatal(err)
+	bottomBox.PackStart(comboBox, true, true, 1)
+	bottomBox.PackEnd(closeButton, true, true, 1)
+
+	contentBox.PackEnd(bottomBox, true, true, 1)
+
+	win.Add(mainBox)
+
+	win.SetDefaultSize(450, 150)
 	win.ShowAll()
 	gtk.Main()
 }
