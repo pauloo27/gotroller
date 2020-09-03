@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -17,7 +18,18 @@ func setupCacheFolder() {
 	cacheFolder = fmt.Sprintf("%s/.cache/gotroller", usr.HomeDir)
 
 	if _, err := os.Stat(cacheFolder); os.IsNotExist(err) {
-		os.Mkdir(cacheFolder, os.ModePerm)
+		err := os.Mkdir(cacheFolder, os.ModePerm)
+		handleFatal(err)
+	}
+}
+
+func deleteSingleCache() {
+	files, err := ioutil.ReadDir(cacheFolder)
+	handleFatal(err)
+	if len(files) > 10 {
+		name := files[0].Name()
+		fmt.Println("Deleting single cache entry", name)
+		os.Remove(fmt.Sprintf("%s/%s", cacheFolder, name))
 	}
 }
 
@@ -28,6 +40,8 @@ func downloadAlbumArt(mediaUrl, artUrl string) (string, error) {
 		fmt.Println("Cache found")
 		return outputFile, nil
 	}
+
+	deleteSingleCache()
 
 	res, err := http.Get(artUrl)
 	if err != nil {
