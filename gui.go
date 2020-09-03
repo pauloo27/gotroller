@@ -170,7 +170,12 @@ func showGUI(conn *dbus.Conn) {
 		}
 	}
 
-	artUrl := metadata["mpris:artUrl"].Value().(string)
+	artUrl := ""
+	artUrlEntry := metadata["mpris:artUrl"].Value()
+	if artUrlEntry != nil {
+		artUrl = artUrlEntry.(string)
+	}
+
 	if artUrl != "" {
 		if strings.HasPrefix(artUrl, "http") {
 			setupCacheFolder()
