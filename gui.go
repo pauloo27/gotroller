@@ -47,7 +47,7 @@ func showGUI(conn *dbus.Conn) {
 
 	win.SetTitle("Gotroller")
 
-	mainBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 1)
+	mainBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	handleFatal(err)
 
 	contentBox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 1)
@@ -161,7 +161,7 @@ func showGUI(conn *dbus.Conn) {
 		os.Exit(0)
 	})
 
-	mainBox.PackEnd(contentBox, true, true, 1)
+	mainBox.PackEnd(contentBox, true, true, 0)
 
 	if enabled {
 		contentBox.PackStart(label, true, true, 1)
@@ -183,10 +183,13 @@ func showGUI(conn *dbus.Conn) {
 			if err != nil {
 				fmt.Println("Cannot download album art")
 			}
+		} else if strings.HasPrefix(artUrl, "file://") {
+			artUrl = strings.TrimPrefix(artUrl, "file://")
 		}
 
 		// Check one more time because it may change in the if above
 		if artUrl != "" {
+
 			albumImagePix, err := gdk.PixbufNewFromFileAtScale(artUrl, 150, 150, true)
 			if err != nil {
 				fmt.Println("Cannot load album art")
