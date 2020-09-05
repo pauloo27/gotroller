@@ -26,7 +26,7 @@ func setupCacheFolder() {
 func deleteSingleCache() {
 	files, err := ioutil.ReadDir(cacheFolder)
 	handleFatal(err)
-	if len(files) > 10 {
+	if len(files) > 1000 {
 		name := files[0].Name()
 		fmt.Println("Deleting single cache entry", name)
 		os.Remove(fmt.Sprintf("%s/%s", cacheFolder, name))
