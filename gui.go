@@ -109,6 +109,11 @@ func showGUI(conn *dbus.Conn) {
 		}
 	}
 
+	artist := metadata["xesam:artist"].Value()
+	if artist != nil {
+		title = fmt.Sprintf("%s - %s", artist.([]string)[0], title)
+	}
+
 	if len(title) > 35 {
 		title = title[0:32] + "..."
 	}
