@@ -4,7 +4,7 @@ MPRIS controller to Polybar wrote in Go.
 
 ![screenshot](https://i.imgur.com/FFmjBnu.png)
 
-![screenshot of the gui](https://i.imgur.com/sjPt8Qc.png)
+![screenshot of the gui](https://i.imgur.com/LYGRtex.png)
 
 
 ## Features
