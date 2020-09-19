@@ -99,12 +99,14 @@ func showGUI(conn *dbus.Conn) {
 
 	player := mpris.New(conn, playerName)
 
-	metadata := player.GetMetadata()
+	metadata, err := player.GetMetadata()
 
 	title := ""
-	titleData := metadata["xesam:title"].Value()
-	if titleData != nil {
-		title = titleData.(string)
+	if err == nil {
+		titleData := metadata["xesam:title"].Value()
+		if titleData != nil {
+			title = titleData.(string)
+		}
 	}
 
 	if len(title) > 35 {
@@ -122,17 +124,26 @@ func showGUI(conn *dbus.Conn) {
 
 	var lastPosition float64
 
+	canSeeLength := true
+
 	updateProgress := func() {
-		length := player.GetLength()
-		position := float64(player.GetPosition())
+		length, err := player.GetLength()
+
+		if err != nil {
+			canSeeLength = false
+		}
+
+		position, err := player.GetPosition()
+
+		if err != nil {
+			canSeeLength = false
+		}
 
 		percent := 100.0 * position / length
 
 		progressBar.SetValue(percent)
 		lastPosition = percent
 	}
-
-	canSeeLength := metadata["mpris:length"].Value() != nil
 
 	if canSeeLength {
 		go func() {
@@ -149,7 +160,8 @@ func showGUI(conn *dbus.Conn) {
 		}
 		currentPosition := progressBar.GetValue()
 		if currentPosition-lastPosition >= 1 || currentPosition-lastPosition <= -1 {
-			player.SetPosition(currentPosition * player.GetLength() / 100)
+			length, _ := player.GetLength()
+			player.SetPosition(currentPosition * length / 100)
 		}
 	})
 

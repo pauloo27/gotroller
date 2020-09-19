@@ -32,7 +32,13 @@ func printToPolybar(name string, player *mpris.Player) {
 
 	identity := strings.TrimPrefix(name, "org.mpris.MediaPlayer2.")
 
-	status := player.GetPlaybackStatus()
+	status, err := player.GetPlaybackStatus()
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	var playPause string
 
 	if status == mpris.PlaybackPlaying {
@@ -72,9 +78,11 @@ func printToPolybar(name string, player *mpris.Player) {
 		Command: fmt.Sprintf("playerctl -p %s next", identity),
 	}
 
+	volume, _ := player.GetVolume()
+
 	volumeUpButton := PolybarActionButton{
 		Index:   4,
-		Display: fmt.Sprintf(" %.f%%", player.GetVolume()*100),
+		Display: fmt.Sprintf(" %.f%%", volume*100),
 		Command: fmt.Sprintf("playerctl -p %s volume 0.05+", identity),
 	}
 
@@ -84,11 +92,11 @@ func printToPolybar(name string, player *mpris.Player) {
 		Command: fmt.Sprintf("playerctl -p %s volume 0.05-", identity),
 	}
 
-	metadata := player.GetMetadata()
+	metadata, err := player.GetMetadata()
 
 	title := ""
-	titleData := metadata["xesam:title"].Value()
-	if titleData != nil {
+	if err == nil {
+		titleData := metadata["xesam:title"].Value()
 		title = titleData.(string)
 	}
 
