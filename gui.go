@@ -185,80 +185,80 @@ func showGUI(conn *dbus.Conn) {
 		if canSeeLength {
 			contentBox.PackStart(progressBar, true, true, 1)
 		}
-	}
 
-	prevButton, err := gtk.ButtonNewFromIconName("media-seek-backward", gtk.ICON_SIZE_MENU)
-	handleFatal(err)
-	prevButton.Connect("clicked", func() {
-		player.Previous()
-		os.Exit(0)
-	})
+		prevButton, err := gtk.ButtonNewFromIconName("media-seek-backward", gtk.ICON_SIZE_MENU)
+		handleFatal(err)
+		prevButton.Connect("clicked", func() {
+			player.Previous()
+			os.Exit(0)
+		})
 
-	buttonIcon := "media-playback-pause"
+		buttonIcon := "media-playback-pause"
 
-	playback, err := player.GetPlaybackStatus()
-	handleFatal(err)
+		playback, err := player.GetPlaybackStatus()
+		handleFatal(err)
 
-	if playback != mpris.PlaybackPlaying {
-		buttonIcon = "media-playback-start"
-	}
-
-	playPauseButton, err := gtk.ButtonNewFromIconName(buttonIcon, gtk.ICON_SIZE_MENU)
-	handleFatal(err)
-	playPauseButton.Connect("clicked", func() {
-		player.PlayPause()
-		os.Exit(0)
-	})
-
-	nextButton, err := gtk.ButtonNewFromIconName("media-seek-forward", gtk.ICON_SIZE_MENU)
-	handleFatal(err)
-	nextButton.Connect("clicked", func() {
-		player.Next()
-		os.Exit(0)
-	})
-
-	buttonBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
-	buttonBox.PackStart(prevButton, false, false, 1)
-	buttonBox.PackStart(playPauseButton, false, false, 1)
-	buttonBox.PackStart(nextButton, false, false, 1)
-	buttonBox.SetHAlign(gtk.ALIGN_CENTER)
-
-	contentBox.PackStart(buttonBox, true, true, 1)
-
-	artUrl := ""
-	artUrlEntry := metadata["mpris:artUrl"].Value()
-	if artUrlEntry != nil {
-		artUrl = artUrlEntry.(string)
-	}
-
-	if artUrl != "" {
-		if strings.HasPrefix(artUrl, "http") {
-			setupCacheFolder()
-			artUrl, err = downloadAlbumArt(metadata["xesam:url"].Value().(string), artUrl)
-			if err != nil {
-				fmt.Println("Cannot download album art")
-			}
-		} else if strings.HasPrefix(artUrl, "file://") {
-			artUrl = strings.TrimPrefix(artUrl, "file://")
+		if playback != mpris.PlaybackPlaying {
+			buttonIcon = "media-playback-start"
 		}
 
-		// Check one more time because it may change in the if above
-		if artUrl != "" {
+		playPauseButton, err := gtk.ButtonNewFromIconName(buttonIcon, gtk.ICON_SIZE_MENU)
+		handleFatal(err)
+		playPauseButton.Connect("clicked", func() {
+			player.PlayPause()
+			os.Exit(0)
+		})
 
-			albumImagePix, err := gdk.PixbufNewFromFileAtScale(artUrl, 150, 150, true)
-			if err != nil {
-				fmt.Println("Cannot load album art")
-			} else {
-				image, err := gtk.ImageNewFromPixbuf(albumImagePix)
+		nextButton, err := gtk.ButtonNewFromIconName("media-seek-forward", gtk.ICON_SIZE_MENU)
+		handleFatal(err)
+		nextButton.Connect("clicked", func() {
+			player.Next()
+			os.Exit(0)
+		})
+
+		buttonBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
+		buttonBox.PackStart(prevButton, false, false, 1)
+		buttonBox.PackStart(playPauseButton, false, false, 1)
+		buttonBox.PackStart(nextButton, false, false, 1)
+		buttonBox.SetHAlign(gtk.ALIGN_CENTER)
+
+		contentBox.PackStart(buttonBox, true, true, 1)
+
+		artUrl := ""
+		artUrlEntry := metadata["mpris:artUrl"].Value()
+		if artUrlEntry != nil {
+			artUrl = artUrlEntry.(string)
+		}
+
+		if artUrl != "" {
+			if strings.HasPrefix(artUrl, "http") {
+				setupCacheFolder()
+				artUrl, err = downloadAlbumArt(metadata["xesam:url"].Value().(string), artUrl)
 				if err != nil {
-					fmt.Println("Cannot load album art (2)")
+					fmt.Println("Cannot download album art")
+				}
+			} else if strings.HasPrefix(artUrl, "file://") {
+				artUrl = strings.TrimPrefix(artUrl, "file://")
+			}
+
+			// Check one more time because it may change in the if above
+			if artUrl != "" {
+
+				albumImagePix, err := gdk.PixbufNewFromFileAtScale(artUrl, 150, 150, true)
+				if err != nil {
+					fmt.Println("Cannot load album art")
 				} else {
-					mainBox.PackStart(image, true, true, 0)
+					image, err := gtk.ImageNewFromPixbuf(albumImagePix)
+					if err != nil {
+						fmt.Println("Cannot load album art (2)")
+					} else {
+						mainBox.PackStart(image, true, true, 0)
+					}
 				}
 			}
 		}
-	}
 
+	}
 	bottomBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 1)
 	handleFatal(err)
 	bottomBox.PackStart(comboBox, true, true, 1)
