@@ -187,6 +187,44 @@ func showGUI(conn *dbus.Conn) {
 		}
 	}
 
+	prevButton, err := gtk.ButtonNewFromIconName("media-seek-backward", gtk.ICON_SIZE_MENU)
+	handleFatal(err)
+	prevButton.Connect("clicked", func() {
+		player.Previous()
+		os.Exit(0)
+	})
+
+	buttonIcon := "media-playback-pause"
+
+	playback, err := player.GetPlaybackStatus()
+	handleFatal(err)
+
+	if playback != mpris.PlaybackPlaying {
+		buttonIcon = "media-playback-start"
+	}
+
+	playPauseButton, err := gtk.ButtonNewFromIconName(buttonIcon, gtk.ICON_SIZE_MENU)
+	handleFatal(err)
+	playPauseButton.Connect("clicked", func() {
+		player.PlayPause()
+		os.Exit(0)
+	})
+
+	nextButton, err := gtk.ButtonNewFromIconName("media-seek-forward", gtk.ICON_SIZE_MENU)
+	handleFatal(err)
+	nextButton.Connect("clicked", func() {
+		player.Next()
+		os.Exit(0)
+	})
+
+	buttonBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
+	buttonBox.PackStart(prevButton, false, false, 1)
+	buttonBox.PackStart(playPauseButton, false, false, 1)
+	buttonBox.PackStart(nextButton, false, false, 1)
+	buttonBox.SetHAlign(gtk.ALIGN_CENTER)
+
+	contentBox.PackStart(buttonBox, true, true, 1)
+
 	artUrl := ""
 	artUrlEntry := metadata["mpris:artUrl"].Value()
 	if artUrlEntry != nil {
