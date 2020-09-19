@@ -12,6 +12,8 @@ github.com/Pauloo27/go-mpris v0.0.3 h1:OmNLbjrmjTYmIDSNN0Pe62PM8N0EtZUvrf0a4CbLZ
 github.com/Pauloo27/go-mpris v0.0.3/go.mod h1:Bp7LmGYphh0aq8rCIOrB2sckiY5M+6N3oc6Jt6FlqNs=
 github.com/Pauloo27/go-mpris v0.0.4 h1:sCJSREdUXidp/RkFHlw7Ki7DdcWTx9XkJkPEyFjASJU=
 github.com/Pauloo27/go-mpris v0.0.4/go.mod h1:Bp7LmGYphh0aq8rCIOrB2sckiY5M+6N3oc6Jt6FlqNs=
+github.com/Pauloo27/go-mpris v0.0.5-0.20200919023629-39da8032d50d h1:YygPph+PpjUv8tC1ME6lBMaNZge0xDVDI5U/8izCBDI=
+github.com/Pauloo27/go-mpris v0.0.5-0.20200919023629-39da8032d50d/go.mod h1:Bp7LmGYphh0aq8rCIOrB2sckiY5M+6N3oc6Jt6FlqNs=
 github.com/godbus/dbus v4.1.0+incompatible h1:WqqLRTsQic3apZUK9qC5sGNfXthmPXzUZ7nQPrNITa4=
 github.com/godbus/dbus v4.1.0+incompatible/go.mod h1:/YcGZj5zSblfDWMMoOzV4fas9FZnQYTkDnsGvmh2Grw=
 github.com/gotk3/gotk3 v0.4.0 h1:TIuhyQitGeRTxOQIV3AJlYtEWWJpC74JHwAIsxlH8MU=
