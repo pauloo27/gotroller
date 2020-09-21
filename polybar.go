@@ -95,7 +95,7 @@ func printToPolybar(name string, player *mpris.Player) {
 	metadata, err := player.GetMetadata()
 
 	title := ""
-	if err == nil {
+	if err == nil && metadata["xesam:title"].Value() != nil {
 		titleData := metadata["xesam:title"].Value()
 		title = titleData.(string)
 	}
