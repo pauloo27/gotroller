@@ -63,7 +63,7 @@ func appendAlbumArt(parent *gtk.Box, metadata map[string]dbus.Variant) {
 				if err != nil {
 					fmt.Println("Cannot load album art (2)")
 				} else {
-					parent.PackStart(image, true, true, 0)
+					parent.PackStart(image, false, false, 0)
 				}
 			}
 		}
