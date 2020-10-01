@@ -190,7 +190,8 @@ func appendPlayerSelector(parent *gtk.Box, players []string) (string, bool) {
 	enabled := selectedPlayer != "Disable"
 
 	for _, player := range players {
-		comboBox.Append(player, player)
+		identity := strings.TrimPrefix(playerName, "org.mpris.MediaPlayer2.")
+		comboBox.Append(player, identity)
 		if player == selectedPlayer {
 			playerName = player
 		}
