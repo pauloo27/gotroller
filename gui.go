@@ -73,10 +73,13 @@ func appendAlbumArt(parent *gtk.Box, metadata map[string]dbus.Variant) {
 func appendControllers(parent *gtk.Box, player *mpris.Player) {
 	prevButton, err := gtk.ButtonNewFromIconName("media-seek-backward", gtk.ICON_SIZE_MENU)
 	handleFatal(err)
-	prevButton.Connect("clicked", func() {
-		player.Previous()
+
+	_, err = prevButton.Connect("clicked", func() {
+		err = player.Previous()
+		handleFatal(err)
 		os.Exit(0)
 	})
+	handleFatal(err)
 
 	buttonIcon := "media-playback-pause"
 
@@ -89,17 +92,21 @@ func appendControllers(parent *gtk.Box, player *mpris.Player) {
 
 	playPauseButton, err := gtk.ButtonNewFromIconName(buttonIcon, gtk.ICON_SIZE_MENU)
 	handleFatal(err)
-	playPauseButton.Connect("clicked", func() {
-		player.PlayPause()
+	_, err = playPauseButton.Connect("clicked", func() {
+		err = player.PlayPause()
+		handleFatal(err)
 		os.Exit(0)
 	})
+	handleFatal(err)
 
 	nextButton, err := gtk.ButtonNewFromIconName("media-seek-forward", gtk.ICON_SIZE_MENU)
 	handleFatal(err)
-	nextButton.Connect("clicked", func() {
-		player.Next()
+	_, err = nextButton.Connect("clicked", func() {
+		err = player.Next()
+		handleFatal(err)
 		os.Exit(0)
 	})
+	handleFatal(err)
 
 	buttonBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	buttonBox.PackStart(prevButton, false, false, 1)
@@ -114,10 +121,11 @@ func appendCloseButton(parent *gtk.Box) {
 	closeButton, err := gtk.ButtonNewWithLabel("Close")
 	handleFatal(err)
 
-	closeButton.Connect("clicked", func() {
+	_, err = closeButton.Connect("clicked", func() {
 		fmt.Println("Closed!")
 		os.Exit(0)
 	})
+	handleFatal(err)
 
 	parent.PackEnd(closeButton, true, true, 1)
 }
@@ -155,22 +163,25 @@ func appendProgressBar(parent *gtk.Box, player *mpris.Player) {
 	if canSeeLength {
 		go func() {
 			for {
-				glib.IdleAdd(updateProgress)
+				_, err = glib.IdleAdd(updateProgress)
+				handleFatal(err)
 				time.Sleep(1 * time.Second)
 			}
 		}()
 	}
 
-	progressBar.Connect("value-changed", func() {
+	_, err = progressBar.Connect("value-changed", func() {
 		if lastPosition == 0 {
 			return
 		}
 		currentPosition := progressBar.GetValue()
 		if currentPosition-lastPosition >= 1 || currentPosition-lastPosition <= -1 {
 			length, _ := player.GetLength()
-			player.SetPosition(currentPosition * length / 100)
+			err = player.SetPosition(currentPosition * length / 100)
+			handleFatal(err)
 		}
 	})
+	handleFatal(err)
 
 	if canSeeLength {
 		parent.PackStart(progressBar, true, true, 1)
@@ -179,7 +190,6 @@ func appendProgressBar(parent *gtk.Box, player *mpris.Player) {
 
 func appendPlayerSelector(parent *gtk.Box, players []string) (string, bool) {
 	comboBox, err := gtk.ComboBoxTextNew()
-
 	handleFatal(err)
 
 	playerName := players[0]
@@ -203,7 +213,7 @@ func appendPlayerSelector(parent *gtk.Box, players []string) (string, bool) {
 		comboBox.SetActiveID("Disable")
 	}
 
-	comboBox.Connect("changed", func() {
+	_, err = comboBox.Connect("changed", func() {
 		newSelection := comboBox.GetActiveText()
 		go func() {
 			data := []byte(newSelection)
@@ -213,6 +223,7 @@ func appendPlayerSelector(parent *gtk.Box, players []string) (string, bool) {
 			os.Exit(0)
 		}()
 	})
+	handleFatal(err)
 
 	parent.PackStart(comboBox, true, true, 1)
 
