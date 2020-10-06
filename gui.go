@@ -200,21 +200,24 @@ func appendPlayerSelector(parent *gtk.Box, players []string) (string, bool) {
 	enabled := selectedPlayer != "Disable"
 
 	for _, player := range players {
-		identity := strings.TrimPrefix(playerName, "org.mpris.MediaPlayer2.")
-		comboBox.Append(player, identity)
+		identity := strings.TrimPrefix(player, "org.mpris.MediaPlayer2.")
+		comboBox.Append(identity, identity)
 		if player == selectedPlayer {
 			playerName = player
 		}
 	}
 
 	if enabled {
-		comboBox.SetActiveID(playerName)
+		comboBox.SetActiveID(strings.TrimPrefix(playerName, "org.mpris.MediaPlayer2."))
 	} else {
 		comboBox.SetActiveID("Disable")
 	}
 
 	_, err = comboBox.Connect("changed", func() {
 		newSelection := comboBox.GetActiveText()
+		if newSelection != "Disable" {
+			newSelection = "org.mpris.MediaPlayer2." + newSelection
+		}
 		go func() {
 			data := []byte(newSelection)
 			err := ioutil.WriteFile(selectedPlayerPath, data, 0644)
