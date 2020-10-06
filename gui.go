@@ -115,6 +115,7 @@ func appendControllers(parent *gtk.Box, player *mpris.Player) {
 	buttonBox.SetHAlign(gtk.ALIGN_CENTER)
 
 	parent.PackStart(buttonBox, true, true, 1)
+	playPauseButton.GrabFocus()
 }
 
 func appendCloseButton(parent *gtk.Box) {
