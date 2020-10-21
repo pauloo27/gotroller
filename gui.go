@@ -282,9 +282,17 @@ func showGUI(conn *dbus.Conn) {
 		}
 	}
 
-	artist := metadata["xesam:artist"].Value()
-	if artist != nil {
-		title = fmt.Sprintf("%s - %s", artist.([]string)[0], title)
+	rawArtist := metadata["xesam:artist"].Value()
+	if rawArtist != nil {
+		var artist string
+		switch rawArtist.(type) {
+		case string:
+			artist = rawArtist.(string)
+		case []string:
+			artist = strings.Join(rawArtist.([]string), ", ")
+		}
+
+		title = fmt.Sprintf("%s - %s", artist, title)
 	}
 
 	if len(title) > 35 {
