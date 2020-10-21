@@ -9,11 +9,14 @@ import (
 	"time"
 
 	"github.com/Pauloo27/go-mpris"
-	"github.com/godbus/dbus"
+	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
+
+var playingImg, pausedImg *gtk.Image
+var playingButton *gtk.Button
 
 func getSelectedPlayer() string {
 	selectedPlayer := ""
@@ -70,6 +73,14 @@ func appendAlbumArt(parent *gtk.Box, metadata map[string]dbus.Variant) {
 	}
 }
 
+func updatePlayingButton(playing bool) {
+	if playing {
+		playingButton.SetImage(playingImg)
+	} else {
+		playingButton.SetImage(pausedImg)
+	}
+}
+
 func appendControllers(parent *gtk.Box, player *mpris.Player) {
 	prevButton, err := gtk.ButtonNewFromIconName("media-seek-backward", gtk.ICON_SIZE_MENU)
 	handleFatal(err)
@@ -81,23 +92,41 @@ func appendControllers(parent *gtk.Box, player *mpris.Player) {
 	})
 	handleFatal(err)
 
-	buttonIcon := "media-playback-pause"
-
-	playback, err := player.GetPlaybackStatus()
-	handleFatal(err)
-
-	if playback != mpris.PlaybackPlaying {
-		buttonIcon = "media-playback-start"
-	}
-
-	playPauseButton, err := gtk.ButtonNewFromIconName(buttonIcon, gtk.ICON_SIZE_MENU)
+	playPauseButton, err := gtk.ButtonNew()
 	handleFatal(err)
 	_, err = playPauseButton.Connect("clicked", func() {
 		err = player.PlayPause()
 		handleFatal(err)
-		os.Exit(0)
 	})
 	handleFatal(err)
+
+	playingButton = playPauseButton
+
+	playbackStatus, err := player.GetPlaybackStatus()
+	handleFatal(err)
+
+	updatePlayingButton(playbackStatus == mpris.PlaybackPlaying)
+
+	go func() {
+		ch := make(chan *dbus.Signal)
+		err := player.OnSignal(ch)
+		handleFatal(err)
+
+		for sig := range ch {
+			if len(sig.Body) < 2 {
+				continue
+			}
+			data := sig.Body[1]
+			switch data.(type) {
+			case map[string]dbus.Variant:
+				value, ok := data.(map[string]dbus.Variant)["PlaybackStatus"]
+				if !ok {
+					continue
+				}
+				updatePlayingButton(mpris.PlaybackStatus(value.Value().(string)) == mpris.PlaybackPlaying)
+			}
+		}
+	}()
 
 	nextButton, err := gtk.ButtonNewFromIconName("media-seek-forward", gtk.ICON_SIZE_MENU)
 	handleFatal(err)
@@ -234,6 +263,16 @@ func appendPlayerSelector(parent *gtk.Box, players []string) (string, bool) {
 	return playerName, enabled
 }
 
+func loadIcons() {
+	img, err := gtk.ImageNewFromIconName("media-playback-pause", gtk.ICON_SIZE_MENU)
+	handleFatal(err)
+	playingImg = img
+
+	img, err = gtk.ImageNewFromIconName("media-playback-start", gtk.ICON_SIZE_MENU)
+	handleFatal(err)
+	pausedImg = img
+}
+
 func showGUI(conn *dbus.Conn) {
 	gtk.Init(nil)
 	win, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
@@ -249,6 +288,8 @@ func showGUI(conn *dbus.Conn) {
 	handleFatal(err)
 
 	win.SetTitle("Gotroller")
+
+	loadIcons()
 
 	mainBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	handleFatal(err)
