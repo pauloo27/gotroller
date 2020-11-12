@@ -21,7 +21,7 @@ func printToPolybar(name string, player *mpris.Player) {
 	playerButton := PolybarActionButton{
 		Index:   1,
 		Display: "",
-		Command: "gotroller gui",
+		Command: "gotroller gui>/dev/null 2>&1 &",
 	}
 
 	icon := stoppedIcon
