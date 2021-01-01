@@ -8,3 +8,6 @@ build-cli:
 
 build-gui: 
 	cd ./gui; go build -v -o ../gotroller-gui
+
+test:
+	go test -v
