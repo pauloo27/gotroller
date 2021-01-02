@@ -10,4 +10,6 @@ const (
 	NEXT     = ""
 
 	VOLUME = ""
+
+	MENU = ""
 )

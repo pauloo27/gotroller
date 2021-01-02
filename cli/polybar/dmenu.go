@@ -1,5 +1,5 @@
 package polybar
 
 func WithDmenu() {
-	printToPolybar("dmenu")
+	printToPolybar(PlayerSelector{"gotroller dmenu-select", true})
 }

@@ -18,7 +18,12 @@ func plyctl(identity, command string) string {
 	return fmt.Sprintf("playerctl %s -p %s", command, identity)
 }
 
-func printToPolybar(preferedPlayerSelectorCommand string) {
+type PlayerSelector struct {
+	Command       string
+	SetFromOutput bool
+}
+
+func printToPolybar(playerSelector PlayerSelector) {
 	player, err := gotroller.GetBestPlayer()
 	handleError(err, "Cannot get best player")
 
@@ -59,6 +64,13 @@ func printToPolybar(preferedPlayerSelectorCommand string) {
 		title = rawTitle.Value().(string)
 	}
 
+	playerSelectorCommand := playerSelector.Command
+	if playerSelector.SetFromOutput {
+		playerSelectorCommand += "| xargs gotroller set-player"
+	}
+
+	playerSelectorAction := ActionButton{LEFT_CLICK, gotroller.MENU, playerSelectorCommand}
+
 	playPause := ActionButton{LEFT_CLICK, icon, plyctl(shortIdentity, "play-pause")}
 
 	// previous + restart
@@ -80,7 +92,8 @@ func printToPolybar(preferedPlayerSelectorCommand string) {
 		fmt.Printf("%s %s", "...", icon)
 	} else {
 		// Print everything
-		fmt.Printf("%s %s %s %s %s",
+		fmt.Printf("%s %s %s %s %s %s",
+			playerSelectorAction.String(),
 			title,
 			// restart contains previous
 			previous.String(),

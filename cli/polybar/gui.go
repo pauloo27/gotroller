@@ -1,5 +1,5 @@
 package polybar
 
 func WithGUI() {
-	printToPolybar("gotroller-gui")
+	printToPolybar(PlayerSelector{"gotroller-gui", false})
 }

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Pauloo27/gotroller"
+	"github.com/Pauloo27/gotroller/cli/dmenu"
 	"github.com/Pauloo27/gotroller/cli/polybar"
 )
 
@@ -12,6 +14,16 @@ type Mode func()
 var modes = map[string]Mode{
 	"polybar-dmenu": polybar.WithDmenu,
 	"polybar-gui":   polybar.WithGUI,
+	"set-player":    setPlayer,
+	"dmenu-select":  dmenu.Select,
+}
+
+func setPlayer() {
+	if len(os.Args) < 3 {
+		fmt.Println("Missing player identity")
+		os.Exit(-1)
+	}
+	gotroller.SetPreferedPlayerName(os.Args[2])
 }
 
 func listModes() {
