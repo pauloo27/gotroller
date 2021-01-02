@@ -14,7 +14,7 @@ func handleError(err error, message string) {
 	}
 }
 
-func playerctl(identity, command string) string {
+func plyctl(identity, command string) string {
 	return fmt.Sprintf("playerctl %s -p %s", command, identity)
 }
 
@@ -50,12 +50,20 @@ func printToPolybar(preferedPlayerSelectorCommand string) {
 
 	title := metadata["xesam:title"].Value()
 
-	// play/pause
-	playPause := ActionButton{LEFT_CLICK, icon, playerctl(shortIdentity, "play-pause")}
+	playPause := ActionButton{LEFT_CLICK, icon, plyctl(shortIdentity, "play-pause")}
+
+	// one is "inside" of another
+	previous := ActionButton{LEFT_CLICK, gotroller.PREVIOUS, plyctl(shortIdentity, "previous")}
+	restart := ActionOver(previous, RIGHT_CLICK, plyctl(shortIdentity, "position 0"))
+
+	next := ActionButton{LEFT_CLICK, gotroller.NEXT, plyctl(shortIdentity, "next")}
 
 	// Print everything
-	fmt.Printf("%s %s",
+	fmt.Printf("%s %s %s %s",
 		title,
+		// restart contains previous
+		restart.String(),
 		playPause.String(),
+		next.String(),
 	)
 }

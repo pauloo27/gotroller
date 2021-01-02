@@ -25,3 +25,7 @@ type ActionButton struct {
 func (a ActionButton) String() string {
 	return fmt.Sprintf("%%{A%d:%s:}%s%%{A}", a.Index, a.Command, a.Display)
 }
+
+func ActionOver(a ActionButton, index MouseIndex, command string) ActionButton {
+	return ActionButton{index, a.String(), command}
+}

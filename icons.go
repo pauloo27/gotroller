@@ -5,4 +5,7 @@ const (
 	PLAYING = ""
 	PAUSED  = ""
 	STOPPED = ""
+
+	PREVIOUS = ""
+	NEXT     = ""
 )
