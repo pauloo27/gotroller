@@ -6,7 +6,7 @@ type MouseIndex uint
 
 // From https://github.com/polybar/polybar/wiki/Formatting#action-a
 const (
-	LEFT_CLICK = MouseIndex(iota)
+	LEFT_CLICK = MouseIndex(iota + 1)
 	MIDDLE_CLICK
 	RIGHT_CLICK
 	SCROLL_UP
@@ -17,11 +17,11 @@ const (
 	DOUBLE_RIGHT_CLICK
 )
 
-type PolybarActionButton struct {
+type ActionButton struct {
 	Index            MouseIndex
 	Display, Command string
 }
 
-func (a *PolybarActionButton) String() string {
+func (a ActionButton) String() string {
 	return fmt.Sprintf("%%{A%d:%s:}%s%%{A}", a.Index, a.Command, a.Display)
 }
