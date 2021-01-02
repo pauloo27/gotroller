@@ -9,6 +9,8 @@ import (
 
 var dbusConn *dbus.Conn
 
+// GetDbusConn Creates and cache a dbus connection. The cache is used in
+// subsequent calls.
 func GetDbusConn() (*dbus.Conn, error) {
 	if dbusConn != nil {
 		return dbusConn, nil
@@ -30,4 +32,54 @@ func ListPlayersName() ([]string, error) {
 	}
 
 	return names, nil
+}
+
+// GetBestPlayer Returns the "best" player to be displayed. THIS IS NOT CACHED,
+// so avoid calling it twice.
+// The "best" is the one selected by the user. If not players were selected or
+// the selected player isn't running then the best is the first player in the
+// list that isn't "Stopped". If all players are stopped, fallback to the
+// first one in the list.
+func GetBestPlayer() (*mpris.Player, error) {
+	names, err := ListPlayersName()
+	if err != nil {
+		return nil, fmt.Errorf("Cannot get best player: %v", err)
+	}
+
+	if len(names) == 0 {
+		return nil, nil
+	}
+
+	conn, err := GetDbusConn()
+	if err != nil {
+		return nil, fmt.Errorf("Cannot get dbus connection: %v", err)
+	}
+
+	preferedPlayerName, err := GetPreferedPlayerName()
+
+	if preferedPlayerName == "Disabled" {
+		return nil, nil
+	}
+
+	if preferedPlayerName != "" && err == nil {
+		for _, name := range names {
+			if name == preferedPlayerName {
+				// N I C E: Founded! Now connect and return!
+				return mpris.New(conn, name), nil
+			}
+		}
+	}
+
+	for _, name := range names {
+		player := mpris.New(conn, name)
+		if err != nil {
+			return nil, fmt.Errorf("Cannot connect to player: %v", err)
+		}
+		status, err := player.GetPlaybackStatus()
+		if err != nil && status != mpris.PlaybackStopped {
+			return player, nil
+		}
+	}
+
+	return mpris.New(conn, names[0]), nil
 }
