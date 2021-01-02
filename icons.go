@@ -8,4 +8,6 @@ const (
 
 	PREVIOUS = ""
 	NEXT     = ""
+
+	VOLUME = ""
 )

@@ -33,12 +33,18 @@ func printToPolybar(preferedPlayerSelectorCommand string) {
 	status, err := player.GetPlaybackStatus()
 	handleError(err, "Cannot get playback status")
 
+	volume, err := player.GetVolume()
+	handleError(err, "Cannot get volume")
+
+	stopped := false
+
 	var icon string
 	switch status {
 	case mpris.PlaybackPaused:
 		icon = gotroller.PAUSED
 	case mpris.PlaybackStopped:
 		icon = gotroller.STOPPED
+		stopped = true
 	default:
 		icon = gotroller.PLAYING
 	}
@@ -48,22 +54,39 @@ func printToPolybar(preferedPlayerSelectorCommand string) {
 
 	shortIdentity := strings.TrimPrefix(identity, "org.mpris.MediaPlayer2.")
 
-	title := metadata["xesam:title"].Value()
+	var title string
+	if rawTitle, ok := metadata["xesam:title"]; ok {
+		title = rawTitle.Value().(string)
+	}
 
 	playPause := ActionButton{LEFT_CLICK, icon, plyctl(shortIdentity, "play-pause")}
 
-	// one is "inside" of another
-	previous := ActionButton{LEFT_CLICK, gotroller.PREVIOUS, plyctl(shortIdentity, "previous")}
-	restart := ActionOver(previous, RIGHT_CLICK, plyctl(shortIdentity, "position 0"))
+	// previous + restart
+	previous := ActionOver(
+		ActionButton{LEFT_CLICK, gotroller.PREVIOUS, plyctl(shortIdentity, "previous")},
+		RIGHT_CLICK, plyctl(shortIdentity, "position 0"),
+	)
 
 	next := ActionButton{LEFT_CLICK, gotroller.NEXT, plyctl(shortIdentity, "next")}
 
-	// Print everything
-	fmt.Printf("%s %s %s %s",
-		title,
-		// restart contains previous
-		restart.String(),
-		playPause.String(),
-		next.String(),
+	volumeAction := ActionOver(
+		ActionButton{SCROLL_UP, fmt.Sprintf("%s %.f%%", gotroller.VOLUME, volume*100), plyctl(shortIdentity, "volume 0.05+")},
+		SCROLL_DOWN,
+		plyctl(shortIdentity, "volume 0.05-"),
 	)
+
+	if stopped {
+		// TODO
+		fmt.Printf("%s %s", "...", icon)
+	} else {
+		// Print everything
+		fmt.Printf("%s %s %s %s %s",
+			title,
+			// restart contains previous
+			previous.String(),
+			playPause.String(),
+			next.String(),
+			volumeAction.String(),
+		)
+	}
 }
