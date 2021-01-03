@@ -18,17 +18,12 @@ func plyctl(identity, command string) string {
 	return fmt.Sprintf("playerctl %s -p %s", command, identity)
 }
 
-type PlayerSelector struct {
-	Command       string
-	SetFromOutput bool
-}
-
-func printToPolybar(playerSelector PlayerSelector) {
+func printToPolybar(playerSelectCommand string) {
 	player, err := gotroller.GetBestPlayer()
 	handleError(err, "Cannot get best player")
 
 	if player == nil {
-		fmt.Println("--")
+		fmt.Println("Nothing playing...")
 		return
 	}
 
@@ -64,12 +59,7 @@ func printToPolybar(playerSelector PlayerSelector) {
 		title = rawTitle.Value().(string)
 	}
 
-	playerSelectorCommand := playerSelector.Command
-	if playerSelector.SetFromOutput {
-		playerSelectorCommand += "| xargs gotroller set-player"
-	}
-
-	playerSelectorAction := ActionButton{LEFT_CLICK, gotroller.MENU, playerSelectorCommand}
+	playerSelectorAction := ActionButton{LEFT_CLICK, gotroller.MENU, playerSelectCommand}
 
 	playPause := ActionButton{LEFT_CLICK, icon, plyctl(shortIdentity, "play-pause")}
 
@@ -88,8 +78,7 @@ func printToPolybar(playerSelector PlayerSelector) {
 	)
 
 	if stopped {
-		// TODO
-		fmt.Printf("%s %s", "...", icon)
+		fmt.Printf("%s %s", playerSelectorAction.String(), icon)
 	} else {
 		// Print everything
 		fmt.Printf("%s %s %s %s %s %s",
