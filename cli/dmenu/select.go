@@ -21,7 +21,13 @@ func Select() {
 		log.Fatalf("Cannot list players: %v", err)
 	}
 
-	io.WriteString(stdin, strings.Join(names, "\n"))
+	shortNames := []string{"auto"}
+
+	for _, name := range names {
+		shortNames = append(shortNames, strings.TrimPrefix(name, "org.mpris.MediaPlayer2."))
+	}
+
+	io.WriteString(stdin, strings.Join(shortNames, "\n"))
 	err = stdin.Close()
 
 	out, err := cmd.Output()
@@ -29,5 +35,5 @@ func Select() {
 		log.Fatalf("Cannot run dmenu: %v", err)
 	}
 
-	gotroller.SetPreferedPlayerName(strings.TrimSuffix(string(out), "\n"))
+	gotroller.SetPreferedPlayerName("org.mpris.MediaPlayer2." + strings.TrimSuffix(string(out), "\n"))
 }
