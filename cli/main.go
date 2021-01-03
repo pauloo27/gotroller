@@ -23,7 +23,12 @@ func setPlayer() {
 		fmt.Println("Missing player identity")
 		os.Exit(-1)
 	}
-	gotroller.SetPreferedPlayerName(os.Args[2])
+	identity := os.Args[2]
+	if identity == "auto" {
+		gotroller.RemovePreferedPlayerName()
+	} else {
+		gotroller.SetPreferedPlayerName(identity)
+	}
 }
 
 func listModes() {
