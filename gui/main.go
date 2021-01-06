@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/Pauloo27/gotroller/gui/window"
+)
 
 func main() {
-	fmt.Println("GUI module here, how are ya?")
+	fmt.Println("Starting GUI...")
+	window.StartGUI()
 }
