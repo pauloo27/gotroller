@@ -1,5 +1,12 @@
 package polybar
 
+import (
+	"fmt"
+	"os"
+)
+
 func WithGUI() {
-	printToPolybar("gotroller-gui")
+	// TODO
+	fmt.Println("Not supported yet")
+	os.Exit(-1)
 }
