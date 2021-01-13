@@ -7,6 +7,7 @@ import (
 
 	"github.com/Pauloo27/go-mpris"
 	"github.com/Pauloo27/gotroller"
+	"github.com/fsnotify/fsnotify"
 	"github.com/godbus/dbus/v5"
 )
 
@@ -34,14 +35,26 @@ func startMainLoop(playerSelectCommand string) {
 	}
 
 	update()
-	ch := make(chan *dbus.Signal)
-	err = player.OnSignal(ch)
+	mprisCh := make(chan *dbus.Signal)
+	err = player.OnSignal(mprisCh)
 	handleError(err, "Cannot listen to mpris signals")
 
-	for sig := range ch {
-		// player exitted
-		if sig.Name == "org.freedesktop.DBus.NameOwnerChanged" {
+	preferedPlayerCh := make(chan fsnotify.Event)
+	gotroller.ListenToChanges(preferedPlayerCh)
+
+	go func() {
+		for range preferedPlayerCh {
+			// prefered player changed
 			os.Exit(0)
+		}
+	}()
+
+	for sig := range mprisCh {
+		if sig.Name == "org.freedesktop.DBus.NameOwnerChanged" {
+			// player exitted
+			if len(sig.Body) == 3 && sig.Body[0] == "org.mpris.MediaPlayer2.mpv" {
+				os.Exit(0)
+			}
 		}
 		update()
 	}
