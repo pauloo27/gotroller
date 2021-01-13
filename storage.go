@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/fsnotify/fsnotify"
 )
 
 const PREFERED_PLAYER_STORE_PATH = "/dev/shm/gotroller-player.txt"
@@ -27,4 +29,23 @@ func RemovePreferedPlayerName() error {
 
 func HideGotroller() error {
 	return SetPreferedPlayerName("Disabled")
+}
+
+func ListenToChanges(ch chan fsnotify.Event) error {
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		for {
+			event, ok := <-watcher.Events
+			if !ok {
+				return
+			}
+			ch <- event
+		}
+	}()
+
+	return watcher.Add(PREFERED_PLAYER_STORE_PATH)
 }
