@@ -1,5 +1,5 @@
 package polybar
 
 func WithDmenu() {
-	printToPolybar("gotroller dmenu-select")
+	startMainLoop("gotroller dmenu-select")
 }

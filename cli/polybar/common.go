@@ -2,10 +2,12 @@ package polybar
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/Pauloo27/go-mpris"
 	"github.com/Pauloo27/gotroller"
+	"github.com/godbus/dbus/v5"
 )
 
 func handleError(err error, message string) {
@@ -18,7 +20,7 @@ func plyctl(identity, command string) string {
 	return fmt.Sprintf("playerctl %s -p %s", command, identity)
 }
 
-func printToPolybar(playerSelectCommand string) {
+func startMainLoop(playerSelectCommand string) {
 	player, err := gotroller.GetBestPlayer()
 	handleError(err, "Cannot get best player")
 
@@ -27,6 +29,25 @@ func printToPolybar(playerSelectCommand string) {
 		return
 	}
 
+	update := func() {
+		printToPolybar(playerSelectCommand, player)
+	}
+
+	update()
+	ch := make(chan *dbus.Signal)
+	err = player.OnSignal(ch)
+	handleError(err, "Cannot listen to mpris signals")
+
+	for sig := range ch {
+		// player exitted
+		if sig.Name == "org.freedesktop.DBus.NameOwnerChanged" {
+			os.Exit(0)
+		}
+		update()
+	}
+}
+
+func printToPolybar(playerSelectCommand string, player *mpris.Player) {
 	metadata, err := player.GetMetadata()
 	handleError(err, "Cannot get player metadata")
 
@@ -78,10 +99,10 @@ func printToPolybar(playerSelectCommand string) {
 	)
 
 	if stopped {
-		fmt.Printf("%s %s", playerSelectorAction.String(), icon)
+		fmt.Printf("%s %s\n", playerSelectorAction.String(), icon)
 	} else {
 		// Print everything
-		fmt.Printf("%s %s %s %s %s %s",
+		fmt.Printf("%s %s %s %s %s %s\n",
 			playerSelectorAction.String(),
 			title,
 			// restart contains previous
