@@ -31,14 +31,15 @@ func StartGUI() {
 	mainContainer, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 1)
 	handleError(err)
 
-	controllerContainer, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 1)
+	infoContainer, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 1)
 	handleError(err)
 
 	mainContainer.PackStart(createAlbumArt(), false, true, 0)
-	mainContainer.PackStart(controllerContainer, true, true, 1)
+	mainContainer.PackStart(infoContainer, true, true, 1)
 
-	controllerContainer.PackStart(createArtist(), false, false, 0)
-	controllerContainer.PackStart(createTitle(), false, false, 0)
+	infoContainer.PackStart(createArtist(), false, false, 0)
+	infoContainer.PackStart(createTitle(), false, false, 0)
+	infoContainer.PackStart(createControllers(), false, false, 0)
 
 	win.Add(mainContainer)
 
