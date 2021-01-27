@@ -1,13 +1,18 @@
 package window
 
 import (
+	"regexp"
+
 	"github.com/Pauloo27/go-mpris"
+	"github.com/Pauloo27/gotroller/gui/downloader"
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/gdk"
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
 var albumImg *gtk.Image
+var httpRe = regexp.MustCompile(`^https?:\/\/`)
 
 func setAlbumImage(path string) {
 	imagePix, err := gdk.PixbufNewFromFileAtSize(path, -1, HEIGHT)
@@ -22,8 +27,23 @@ func createAlbumArt() *gtk.Image {
 	handleError(err)
 
 	onUpdate(func(player *mpris.Player, metadata map[string]dbus.Variant) {
-		// TODO
-		// setAlbumImage(path)
+		rawArtURL, ok := metadata["mpris:artUrl"]
+		if !ok {
+			return
+		}
+		artURL := rawArtURL.Value().(string)
+		if httpRe.MatchString(artURL) {
+			// TODO: download and use
+			go func() {
+				downloadedPath, err := downloader.DownloadRemoteArt(artURL)
+				if err != nil {
+					return
+				}
+				glib.IdleAdd(func() { setAlbumImage(downloadedPath) })
+			}()
+		} else {
+			setAlbumImage(artURL)
+		}
 	})
 
 	return albumImg
