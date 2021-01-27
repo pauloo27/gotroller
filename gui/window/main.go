@@ -59,6 +59,7 @@ func StartGUI() {
 		}
 	}()
 
+	win.SetPosition(gtk.WIN_POS_MOUSE)
 	win.SetDefaultSize(WIDTH, HEIGHT)
 	win.ShowAll()
 	gtk.Main()
