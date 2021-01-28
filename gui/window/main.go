@@ -2,6 +2,7 @@ package window
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/Pauloo27/gotroller"
 	"github.com/godbus/dbus/v5"
@@ -46,6 +47,11 @@ func StartGUI() {
 	go func() {
 		player, err := gotroller.GetBestPlayer()
 		handleError(err)
+
+		if player == nil {
+			fmt.Println("No player found")
+			os.Exit(-1)
+		}
 
 		ch := make(chan *dbus.Signal)
 		err = player.OnSignal(ch)
