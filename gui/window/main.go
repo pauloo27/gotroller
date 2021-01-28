@@ -44,6 +44,7 @@ func StartGUI() {
 	infoContainer.PackStart(createArtist(), false, false, 0)
 	infoContainer.PackStart(createTitle(), false, false, 0)
 	infoContainer.PackStart(createControllers(), false, false, 0)
+	infoContainer.PackStart(createProgressBar(), false, false, 0)
 
 	win.Add(mainContainer)
 
