@@ -3,7 +3,6 @@ package window
 import (
 	"regexp"
 
-	"github.com/Pauloo27/go-mpris"
 	"github.com/Pauloo27/gotroller/gui/downloader"
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/gdk"
@@ -26,7 +25,7 @@ func createAlbumArt() *gtk.Image {
 	albumImg, err = gtk.ImageNew()
 	handleError(err)
 
-	onUpdate(func(player *mpris.Player, metadata map[string]dbus.Variant) {
+	onUpdate(func(metadata map[string]dbus.Variant) {
 		rawArtURL, ok := metadata["mpris:artUrl"]
 		if !ok {
 			return

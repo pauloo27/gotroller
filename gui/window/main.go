@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Pauloo27/go-mpris"
 	"github.com/Pauloo27/gotroller"
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/glib"
@@ -14,6 +15,8 @@ const (
 	HEIGHT = 150
 	WIDTH  = HEIGHT + 450
 )
+
+var playerInstance *mpris.Player
 
 func StartGUI() {
 	gtk.Init(nil)
@@ -45,19 +48,20 @@ func StartGUI() {
 	win.Add(mainContainer)
 
 	go func() {
-		player, err := gotroller.GetBestPlayer()
+		var err error
+		playerInstance, err = gotroller.GetBestPlayer()
 		handleError(err)
 
-		if player == nil {
+		if playerInstance == nil {
 			fmt.Println("No player found")
 			os.Exit(-1)
 		}
 
 		ch := make(chan *dbus.Signal)
-		err = player.OnSignal(ch)
+		err = playerInstance.OnSignal(ch)
 		handleError(err)
 
-		callUpdate := func() { glib.IdleAdd(func() { updateAll(player) }) }
+		callUpdate := func() { glib.IdleAdd(func() { updateAll() }) }
 
 		callUpdate()
 

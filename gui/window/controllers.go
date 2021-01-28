@@ -12,8 +12,6 @@ func loadIcon(name string) *gtk.Image {
 	return img
 }
 
-var currentPlayer *mpris.Player
-
 func createControllers() *gtk.Box {
 	container, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 5)
 	handleError(err)
@@ -22,20 +20,20 @@ func createControllers() *gtk.Box {
 	handleError(err)
 
 	prev.Connect("clicked", func() {
-		if currentPlayer == nil {
+		if playerInstance == nil {
 			return
 		}
-		currentPlayer.Previous()
+		playerInstance.Previous()
 	})
 
 	next, err := gtk.ButtonNewFromIconName("media-seek-forward", gtk.ICON_SIZE_BUTTON)
 	handleError(err)
 
 	next.Connect("clicked", func() {
-		if currentPlayer == nil {
+		if playerInstance == nil {
 			return
 		}
-		currentPlayer.Next()
+		playerInstance.Next()
 	})
 
 	playingIcon := loadIcon("media-playback-pause")
@@ -45,15 +43,14 @@ func createControllers() *gtk.Box {
 	handleError(err)
 
 	playPause.Connect("clicked", func() {
-		if currentPlayer == nil {
+		if playerInstance == nil {
 			return
 		}
-		currentPlayer.PlayPause()
+		playerInstance.PlayPause()
 	})
 
-	onUpdate(func(player *mpris.Player, metadata map[string]dbus.Variant) {
-		currentPlayer = player
-		status, err := player.GetPlaybackStatus()
+	onUpdate(func(metadata map[string]dbus.Variant) {
+		status, err := playerInstance.GetPlaybackStatus()
 		handleError(err)
 
 		if status == mpris.PlaybackPaused {

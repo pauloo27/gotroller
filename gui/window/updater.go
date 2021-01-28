@@ -1,19 +1,18 @@
 package window
 
 import (
-	"github.com/Pauloo27/go-mpris"
 	"github.com/godbus/dbus/v5"
 )
 
-type UpdateFunction func(player *mpris.Player, metadata map[string]dbus.Variant)
+type UpdateFunction func(metadata map[string]dbus.Variant)
 
 var updaters []UpdateFunction
 
-func updateAll(player *mpris.Player) {
-	metadata, err := player.GetMetadata()
+func updateAll() {
+	metadata, err := playerInstance.GetMetadata()
 	handleError(err)
 	for _, update := range updaters {
-		update(player, metadata)
+		update(metadata)
 	}
 }
 
