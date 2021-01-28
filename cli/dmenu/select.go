@@ -21,7 +21,7 @@ func Select() {
 		log.Fatalf("Cannot list players: %v", err)
 	}
 
-	shortNames := []string{"auto"}
+	shortNames := []string{"disabled", "auto"}
 
 	for _, name := range names {
 		shortNames = append(shortNames, strings.TrimPrefix(name, "org.mpris.MediaPlayer2."))
@@ -35,5 +35,14 @@ func Select() {
 		log.Fatalf("Cannot run dmenu: %v", err)
 	}
 
-	gotroller.SetPreferedPlayerName("org.mpris.MediaPlayer2." + strings.TrimSuffix(string(out), "\n"))
+	name := strings.TrimSuffix(string(out), "\n")
+	switch name {
+	case "auto":
+		gotroller.RemovePreferedPlayerName()
+	case "disabled":
+		gotroller.HideGotroller()
+	default:
+		gotroller.SetPreferedPlayerName("org.mpris.MediaPlayer2." + name)
+	}
+
 }
