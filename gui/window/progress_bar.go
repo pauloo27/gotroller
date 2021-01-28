@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/godbus/dbus/v5"
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -21,7 +22,9 @@ func createProgressBar() *gtk.Scale {
 		handleError(err)
 
 		expectedValue = position / duration
-		scale.SetValue(expectedValue)
+		glib.IdleAdd(func() {
+			scale.SetValue(expectedValue)
+		})
 	}
 
 	onUpdate(func(metadata map[string]dbus.Variant) {
