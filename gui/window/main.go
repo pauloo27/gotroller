@@ -40,6 +40,7 @@ func StartGUI() {
 
 	mainContainer.PackStart(createAlbumArt(), false, true, 0)
 	mainContainer.PackStart(infoContainer, true, true, 1)
+	mainContainer.PackEnd(createVolumeController(), false, false, 1)
 
 	infoContainer.PackStart(createArtist(), false, false, 0)
 	infoContainer.PackStart(createTitle(), false, false, 0)
