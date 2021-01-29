@@ -1,6 +1,7 @@
 package window
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -53,13 +54,15 @@ func StartGUI() {
 	go func() {
 		var err error
 		playerInstance, err = gotroller.GetBestPlayer()
-		handleError(err)
-
-		if playerInstance == nil {
-			if err == nil {
+		if err != nil {
+			if errors.Is(err, gotroller.ErrDisabled{}) {
 				gotroller.RemovePreferedPlayerName()
 				os.Exit(0)
 			}
+			handleError(err)
+		}
+
+		if playerInstance == nil {
 			fmt.Println("No player found")
 			os.Exit(-1)
 		}

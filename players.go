@@ -34,6 +34,12 @@ func ListPlayersName() ([]string, error) {
 	return names, nil
 }
 
+type ErrDisabled struct{}
+
+func (e ErrDisabled) Error() string {
+	return "Disabled"
+}
+
 // GetBestPlayer Returns the "best" player to be displayed. THIS IS NOT CACHED,
 // so avoid calling it twice.
 // The "best" is the one selected by the user. If not players were selected or
@@ -58,7 +64,7 @@ func GetBestPlayer() (*mpris.Player, error) {
 	preferedPlayerName, err := GetPreferedPlayerName()
 
 	if preferedPlayerName == "Disabled" {
-		return nil, nil
+		return nil, ErrDisabled{}
 	}
 
 	if preferedPlayerName != "" && err == nil {
