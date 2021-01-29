@@ -100,6 +100,21 @@ func printToPolybar(playerSelectCommand string, player *mpris.Player) {
 		title = rawTitle.Value().(string)
 	}
 
+	var artist string
+	if rawArtist, ok := metadata["xesam:artist"]; ok {
+		switch rawArtist.Value().(type) {
+		case string:
+			artist = rawArtist.Value().(string)
+		case []string:
+			artist = strings.Join(rawArtist.Value().([]string), ", ")
+		}
+	}
+
+	fullTitle := title
+	if artist != "" {
+		fullTitle += " from " + artist
+	}
+
 	playerSelectorAction := ActionButton{LEFT_CLICK, gotroller.MENU, playerSelectCommand}
 
 	playPause := ActionButton{LEFT_CLICK, icon, plyctl(shortIdentity, "play-pause")}
@@ -124,7 +139,7 @@ func printToPolybar(playerSelectCommand string, player *mpris.Player) {
 		// Print everything
 		fmt.Printf("%s %s %s %s %s %s\n",
 			playerSelectorAction.String(),
-			title,
+			fullTitle,
 			// restart contains previous
 			previous.String(),
 			playPause.String(),
