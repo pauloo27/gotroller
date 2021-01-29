@@ -29,8 +29,9 @@ func createProgressBar() *gtk.Scale {
 
 	onUpdate(func(metadata map[string]dbus.Variant) {
 		duration, err = playerInstance.GetLength()
-		handleError(err)
-		updateValue()
+		if err == nil {
+			updateValue()
+		}
 	})
 
 	scale.Connect("value-changed", func() {
