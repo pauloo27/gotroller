@@ -24,9 +24,15 @@ func plyctl(identity, command string) string {
 func startMainLoop(playerSelectCommand string) {
 	player, err := gotroller.GetBestPlayer()
 	handleError(err, "Cannot get best player")
-
 	if player == nil {
-		fmt.Println("Nothing playing...")
+		// if both are nil (player and err) the player is "Disabled"
+		// see HidePlayer() at storage.go
+		if err == nil {
+			playerSelectorAction := ActionButton{LEFT_CLICK, gotroller.MENU, playerSelectCommand}
+			fmt.Printf("%s\n", playerSelectorAction.String())
+		} else {
+			fmt.Println("Nothing playing...")
+		}
 		return
 	}
 

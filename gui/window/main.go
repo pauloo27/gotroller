@@ -55,6 +55,10 @@ func StartGUI() {
 		handleError(err)
 
 		if playerInstance == nil {
+			if err == nil {
+				gotroller.RemovePreferedPlayerName()
+				os.Exit(0)
+			}
 			fmt.Println("No player found")
 			os.Exit(-1)
 		}
