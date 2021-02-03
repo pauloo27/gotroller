@@ -11,3 +11,11 @@ build-gui:
 
 test:
 	go test -v
+
+install-cli: build-cli
+	sudo cp ./gotroller /usr/bin
+
+install-gui: build-gui
+	sudo cp ./gotroller-gui /usr/bin/
+
+install: install-cli install-gui
