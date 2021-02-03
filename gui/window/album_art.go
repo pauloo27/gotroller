@@ -2,6 +2,7 @@ package window
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/Pauloo27/gotroller/gui/downloader"
 	"github.com/godbus/dbus/v5"
@@ -40,8 +41,8 @@ func createAlbumArt() *gtk.Image {
 				}
 				glib.IdleAdd(func() { setAlbumImage(downloadedPath) })
 			}()
-		} else {
-			setAlbumImage(artURL)
+		} else if strings.HasPrefix(artURL, "file://") {
+			setAlbumImage(strings.TrimPrefix(artURL, "file://"))
 		}
 	})
 
