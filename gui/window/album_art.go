@@ -33,7 +33,6 @@ func createAlbumArt() *gtk.Image {
 		}
 		artURL := rawArtURL.Value().(string)
 		if httpRe.MatchString(artURL) {
-			// TODO: download and use
 			go func() {
 				downloadedPath, err := downloader.DownloadRemoteArt(artURL)
 				if err != nil {
@@ -42,7 +41,11 @@ func createAlbumArt() *gtk.Image {
 				glib.IdleAdd(func() { setAlbumImage(downloadedPath) })
 			}()
 		} else if strings.HasPrefix(artURL, "file://") {
-			setAlbumImage(strings.TrimPrefix(artURL, "file://"))
+			// TODO: fix
+			setAlbumImage(
+				strings.ReplaceAll(strings.ReplaceAll(strings.TrimPrefix(artURL, "file://"), "%20", " "),
+					"%7C", "|",
+				))
 		}
 	})
 
