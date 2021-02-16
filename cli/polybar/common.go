@@ -3,6 +3,7 @@ package polybar
 import (
 	"errors"
 	"fmt"
+	"html"
 	"os"
 	"strings"
 
@@ -114,6 +115,9 @@ func printToPolybar(playerSelectCommand string, player *mpris.Player) {
 	if artist != "" {
 		fullTitle += " from " + artist
 	}
+	// since lainon.life radios' uses HTML notation in the "japanese" chars
+	// we need to decode them
+	fullTitle = html.UnescapeString(fullTitle)
 
 	playerSelectorAction := ActionButton{LEFT_CLICK, gotroller.MENU, playerSelectCommand}
 
