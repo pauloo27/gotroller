@@ -42,10 +42,10 @@ func createAlbumArt() *gtk.Image {
 			}()
 		} else if strings.HasPrefix(artURL, "file://") {
 			// TODO: fix
-			setAlbumImage(
-				strings.ReplaceAll(strings.ReplaceAll(strings.TrimPrefix(artURL, "file://"), "%20", " "),
-					"%7C", "|",
-				))
+			artURL = strings.ReplaceAll(artURL, "%22", "\"")
+			artURL = strings.ReplaceAll(artURL, "%20", " ")
+			artURL = strings.ReplaceAll(artURL, "%7C", "|")
+			setAlbumImage(strings.TrimPrefix(artURL, "file://"))
 		}
 	})
 
