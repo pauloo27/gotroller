@@ -91,7 +91,9 @@ func printToPolybar(playerSelectCommand string, player *mpris.Player) {
 		icon = gotroller.PLAYING
 	}
 
-	identity, err := player.GetIdentity()
+	// GetName returns identity.instancePID while GetIdentity() returns only
+	// the identity.
+	identity := player.GetName()
 	handleError(err, "Cannot get player identity")
 
 	shortIdentity := strings.TrimPrefix(identity, "org.mpris.MediaPlayer2.")
