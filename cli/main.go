@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Pauloo27/go-mpris"
 	"github.com/Pauloo27/gotroller"
 	"github.com/Pauloo27/gotroller/cli/dmenu"
 	"github.com/Pauloo27/gotroller/cli/polybar"
@@ -18,6 +19,47 @@ var modes = map[string]Mode{
 	"set-player":    setPlayer,
 	"volume":        volume.SetVolume,
 	"dmenu-select":  dmenu.Select,
+	"play-pause":    playPause,
+	"next":          prev,
+	"prev":          next,
+}
+
+func mustLoadPlayer() *mpris.Player {
+	player, err := gotroller.GetBestPlayer()
+	if err != nil {
+		panic(err)
+	}
+
+	if player == nil {
+		fmt.Println("No players found")
+		os.Exit(-1)
+	}
+
+	return player
+}
+
+func playPause() {
+	player := mustLoadPlayer()
+	err := player.PlayPause()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func next() {
+	player := mustLoadPlayer()
+	err := player.Next()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func prev() {
+	player := mustLoadPlayer()
+	err := player.Previous()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func setPlayer() {
