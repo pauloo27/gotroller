@@ -7,6 +7,7 @@ import (
 	"github.com/Pauloo27/gotroller"
 	"github.com/Pauloo27/gotroller/cli/dmenu"
 	"github.com/Pauloo27/gotroller/cli/polybar"
+	"github.com/Pauloo27/gotroller/cli/volume"
 )
 
 type Mode func()
@@ -15,6 +16,7 @@ var modes = map[string]Mode{
 	"polybar-dmenu": polybar.WithDmenu,
 	"polybar-gui":   polybar.WithGUI,
 	"set-player":    setPlayer,
+	"volume":        volume.SetVolume,
 	"dmenu-select":  dmenu.Select,
 }
 
