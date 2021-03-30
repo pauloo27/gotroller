@@ -16,6 +16,7 @@ import (
 func handleError(err error, message string) {
 	if err != nil {
 		fmt.Println(Span{UNDERLINE, "#ff0000", message}.String())
+		os.Exit(-1)
 	}
 }
 
