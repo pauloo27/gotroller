@@ -48,7 +48,7 @@ format-underline = #8be9fd
 If you don't want to use the GUI, change `exec = gotroller polybar-gui` to 
 `exec = gotroller polybar-dmenu`
 
-Finally, add the gotroller module to your bar.
+Finally, restart polybar.
 
 ## License
 
