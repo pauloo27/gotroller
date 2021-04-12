@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/Pauloo27/go-mpris"
@@ -12,6 +13,7 @@ import (
 	"github.com/Pauloo27/gotroller/cli/utils"
 	"github.com/fsnotify/fsnotify"
 	"github.com/godbus/dbus/v5"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -20,6 +22,10 @@ var (
 )
 
 func loadMaxSizes() {
+	home, err := os.UserHomeDir()
+	if err == nil {
+		godotenv.Load(path.Join(home, ".config", "gotroller.env"))
+	}
 	maxTitleSize = utils.AtoiOrDefault(os.Getenv("GOTROLLER_MAX_TITLE_SIZE"), 30)
 	maxArtistSize = utils.AtoiOrDefault(os.Getenv("GOTROLLER_MAX_ARTIST_SIZE"), 20)
 }
