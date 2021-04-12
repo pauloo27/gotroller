@@ -7,6 +7,10 @@ func EnforceSize(text string, maxLen int) string {
 		return text
 	}
 
+	if maxLen-3 <= 0 {
+		return ""
+	}
+
 	return text[0:maxLen-3] + "..."
 }
 
