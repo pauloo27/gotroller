@@ -9,9 +9,20 @@ import (
 
 	"github.com/Pauloo27/go-mpris"
 	"github.com/Pauloo27/gotroller"
+	"github.com/Pauloo27/gotroller/cli/utils"
 	"github.com/fsnotify/fsnotify"
 	"github.com/godbus/dbus/v5"
 )
+
+var (
+	maxTitleSize  int
+	maxArtistSize int
+)
+
+func loadMaxSizes() {
+	maxTitleSize = utils.AtoiOrDefault(os.Getenv("GOTROLLER_MAX_TITLE_SIZE"), 30)
+	maxArtistSize = utils.AtoiOrDefault(os.Getenv("GOTROLLER_MAX_ARTIST_SIZE"), 20)
+}
 
 func handleError(err error, message string) {
 	if err != nil {
@@ -114,9 +125,9 @@ func printToPolybar(playerSelectCommand string, player *mpris.Player) {
 		}
 	}
 
-	fullTitle := title
+	fullTitle := utils.EnforceSize(title, int(maxTitleSize))
 	if artist != "" {
-		fullTitle += " from " + artist
+		fullTitle += " from " + utils.EnforceSize(artist, int(maxArtistSize))
 	}
 	// since lainon.life radios' uses HTML notation in the "japanese" chars
 	// we need to decode them
