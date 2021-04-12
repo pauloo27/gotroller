@@ -17,6 +17,7 @@ MPRIS controller to Polybar wrote in Go.
 - "Disable" mode
 
 ## Instalation
+
 First, make sure you have polybar and Font Awesome 5.
 
 Then clone the repository and open it's folder:
@@ -49,6 +50,22 @@ If you don't want to use the GUI, change `exec = gotroller polybar-gui` to
 `exec = gotroller polybar-dmenu`
 
 Finally, restart polybar.
+
+## Config
+
+You can set the song title and artist max length, if the length is greater than
+the defined one, it will be limited and "..." will be appended. The default
+value is 30 (song title) and 20 (artist).
+
+To set it, you can set a system env or just create the file
+`~/.config/gotroller.env` with the following content:
+```bash
+GOTROLLER_MAX_ARTIST_SIZE=20
+GOTROLLER_MAX_TITLE_SIZE=30
+```
+
+_If the value is 0 or negative, the length will not be limited._
+
 
 ## License
 
