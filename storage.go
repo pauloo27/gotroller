@@ -18,13 +18,16 @@ func SetPreferedPlayerName(name string) error {
 func GetPreferedPlayerName() (string, error) {
 	buffer, err := ioutil.ReadFile(PREFERED_PLAYER_STORE_PATH)
 	if err != nil {
+		if os.IsNotExist(err) {
+			RemovePreferedPlayerName() // create a file with empty content
+		}
 		return "", nil
 	}
 	return strings.TrimSuffix(string(buffer), "\n"), nil
 }
 
 func RemovePreferedPlayerName() error {
-	return os.Remove(PREFERED_PLAYER_STORE_PATH)
+	return SetPreferedPlayerName("")
 }
 
 func HideGotroller() error {
