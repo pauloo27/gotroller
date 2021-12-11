@@ -20,8 +20,8 @@ var modes = map[string]Mode{
 	"volume":        volume.SetVolume,
 	"dmenu-select":  dmenu.Select,
 	"play-pause":    playPause,
-	"next":          prev,
-	"prev":          next,
+	"next":          next,
+	"prev":          prev,
 }
 
 func mustLoadPlayer() *mpris.Player {
