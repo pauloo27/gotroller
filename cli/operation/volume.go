@@ -1,4 +1,4 @@
-package volume
+package operation
 
 import (
 	"fmt"
@@ -9,13 +9,7 @@ import (
 	"github.com/Pauloo27/gotroller"
 )
 
-type VolumeOperation int
-
 const (
-	SET      = VolumeOperation(0)
-	INCREASE = VolumeOperation(1)
-	DECREASE = VolumeOperation(-1)
-
 	MAX_VOLUME = 1.5
 )
 
@@ -81,6 +75,4 @@ func SetVolume() {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Printf("Volume set to %.2f", newVolume)
 }
