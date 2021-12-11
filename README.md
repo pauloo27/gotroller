@@ -1,6 +1,8 @@
 # GOTROLLER
 
-MPRIS controller to Polybar wrote in Go.
+MPRIS controller, with GUI and Polybar integrations.
+
+_wrote in go btw._
 
 ![screenshot](https://i.imgur.com/YJ0pMbG.png)
 
