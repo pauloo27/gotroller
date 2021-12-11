@@ -37,8 +37,8 @@ func handleError(err error, message string) {
 	}
 }
 
-func plyctl(identity, command string) string {
-	return fmt.Sprintf("playerctl %s -p %s", command, identity)
+func gotrollerCLI(command string) string {
+	return fmt.Sprintf("gotroller %s", command)
 }
 
 func startMainLoop(playerSelectCommand string) {
@@ -109,13 +109,6 @@ func printToPolybar(playerSelectCommand string, player *mpris.Player) {
 		icon = gotroller.PLAYING
 	}
 
-	// GetName returns identity.instancePID while GetIdentity() returns only
-	// the identity.
-	identity := player.GetName()
-	handleError(err, "Cannot get player identity")
-
-	shortIdentity := strings.TrimPrefix(identity, "org.mpris.MediaPlayer2.")
-
 	var title string
 	if rawTitle, ok := metadata["xesam:title"]; ok {
 		title = rawTitle.Value().(string)
@@ -141,20 +134,20 @@ func printToPolybar(playerSelectCommand string, player *mpris.Player) {
 
 	playerSelectorAction := ActionButton{LEFT_CLICK, gotroller.MENU, playerSelectCommand}
 
-	playPause := ActionButton{LEFT_CLICK, icon, plyctl(shortIdentity, "play-pause")}
+	playPause := ActionButton{LEFT_CLICK, icon, gotrollerCLI("play-pause")}
 
 	// previous + restart
 	previous := ActionOver(
-		ActionButton{LEFT_CLICK, gotroller.PREVIOUS, plyctl(shortIdentity, "previous")},
-		RIGHT_CLICK, plyctl(shortIdentity, "position 0"),
+		ActionButton{LEFT_CLICK, gotroller.PREVIOUS, gotrollerCLI("prev")},
+		RIGHT_CLICK, gotrollerCLI("position 0"), // TODO:
 	)
 
-	next := ActionButton{LEFT_CLICK, gotroller.NEXT, plyctl(shortIdentity, "next")}
+	next := ActionButton{LEFT_CLICK, gotroller.NEXT, gotrollerCLI("next")}
 
 	volumeAction := ActionOver(
-		ActionButton{SCROLL_UP, fmt.Sprintf("%s %.f%%", gotroller.VOLUME, volume*100), plyctl(shortIdentity, "volume 0.05+")},
+		ActionButton{SCROLL_UP, fmt.Sprintf("%s %.f%%", gotroller.VOLUME, volume*100), gotrollerCLI("volume +0.05")},
 		SCROLL_DOWN,
-		plyctl(shortIdentity, "volume 0.05-"),
+		gotrollerCLI("volume -0.05"),
 	)
 
 	if stopped {
