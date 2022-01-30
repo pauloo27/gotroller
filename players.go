@@ -23,12 +23,12 @@ func GetDbusConn() (*dbus.Conn, error) {
 func ListPlayersName() ([]string, error) {
 	conn, err := GetDbusConn()
 	if err != nil {
-		return nil, fmt.Errorf("Cannot get dbus connection: %v", err)
+		return nil, fmt.Errorf("Cannot get dbus connection: %w", err)
 	}
 
 	names, err := mpris.List(conn)
 	if err != nil {
-		return nil, fmt.Errorf("Cannot list players: %v", err)
+		return nil, fmt.Errorf("Cannot list players: %w", err)
 	}
 
 	return names, nil
@@ -49,7 +49,7 @@ func (e ErrDisabled) Error() string {
 func GetBestPlayer() (*mpris.Player, error) {
 	names, err := ListPlayersName()
 	if err != nil {
-		return nil, fmt.Errorf("Cannot get best player: %v", err)
+		return nil, fmt.Errorf("Cannot get best player: %w", err)
 	}
 
 	if len(names) == 0 {
@@ -58,7 +58,7 @@ func GetBestPlayer() (*mpris.Player, error) {
 
 	conn, err := GetDbusConn()
 	if err != nil {
-		return nil, fmt.Errorf("Cannot get dbus connection: %v", err)
+		return nil, fmt.Errorf("Cannot get dbus connection: %w", err)
 	}
 
 	preferedPlayerName, err := GetPreferedPlayerName()
@@ -79,7 +79,7 @@ func GetBestPlayer() (*mpris.Player, error) {
 	for _, name := range names {
 		player := mpris.New(conn, name)
 		if err != nil {
-			return nil, fmt.Errorf("Cannot connect to player: %v", err)
+			return nil, fmt.Errorf("Cannot connect to player: %w", err)
 		}
 		status, err := player.GetPlaybackStatus()
 		if err != nil && status != mpris.PlaybackStopped {
