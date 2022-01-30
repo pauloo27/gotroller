@@ -64,6 +64,8 @@ To set it, you can set a system env or just create the file
 ```bash
 GOTROLLER_MAX_ARTIST_SIZE=20
 GOTROLLER_MAX_TITLE_SIZE=30
+GOTROLLER_GUI_MAX_ARTIST_SIZE=20
+GOTROLLER_GUI_MAX_TITLE_SIZE=30
 ```
 
 _If the value is 0 or negative, the length will not be limited._

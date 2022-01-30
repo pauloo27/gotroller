@@ -1,6 +1,7 @@
 package window
 
 import (
+	"github.com/Pauloo27/gotroller/cli/utils"
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -18,8 +19,8 @@ func createTitle() *gtk.Label {
 			displayTitle = "--"
 		}
 
+		displayTitle = utils.EnforceSize(displayTitle, maxTitleSize)
 		titleLabel.SetText(displayTitle)
 	})
-
 	return titleLabel
 }

@@ -124,9 +124,9 @@ func printToPolybar(playerSelectCommand string, player *mpris.Player) {
 		}
 	}
 
-	fullTitle := utils.EnforceSize(title, int(maxTitleSize))
+	fullTitle := utils.EnforceSize(title, maxTitleSize)
 	if artist != "" {
-		fullTitle += " from " + utils.EnforceSize(artist, int(maxArtistSize))
+		fullTitle += " from " + utils.EnforceSize(artist, maxArtistSize)
 	}
 	// since lainon.life radios' uses HTML notation in the "japanese" chars
 	// we need to decode them

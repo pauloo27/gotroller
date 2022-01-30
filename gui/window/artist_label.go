@@ -3,6 +3,7 @@ package window
 import (
 	"strings"
 
+	"github.com/Pauloo27/gotroller/cli/utils"
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -22,6 +23,7 @@ func createArtist() *gtk.Label {
 			displayArtist = "--"
 		}
 
+		displayArtist = utils.EnforceSize(displayArtist, maxArtistSize)
 		artistLabel.SetText(displayArtist)
 	})
 
