@@ -1,6 +1,7 @@
 package window
 
 import (
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -41,10 +42,10 @@ func createAlbumArt() *gtk.Image {
 				glib.IdleAdd(func() { setAlbumImage(downloadedPath) })
 			}()
 		} else if strings.HasPrefix(artURL, "file://") {
-			// TODO: fix
-			artURL = strings.ReplaceAll(artURL, "%22", "\"")
-			artURL = strings.ReplaceAll(artURL, "%20", " ")
-			artURL = strings.ReplaceAll(artURL, "%7C", "|")
+			decodedURL, err := url.QueryUnescape(artURL)
+			if err == nil {
+				artURL = decodedURL
+			}
 			setAlbumImage(strings.TrimPrefix(artURL, "file://"))
 		}
 	})
