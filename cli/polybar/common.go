@@ -93,8 +93,9 @@ func printToPolybar(playerSelectCommand string, player *mpris.Player) {
 	status, err := player.GetPlaybackStatus()
 	handleError(err, "Cannot get playback status")
 
-	volume, err := player.GetVolume()
-	handleError(err, "Cannot get volume")
+	volume, _ := player.GetVolume()
+	// ok so some apps (like firefox) do not return the volume...
+	//handleError(err, "Cannot get volume")
 
 	stopped := false
 
