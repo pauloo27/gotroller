@@ -27,9 +27,7 @@ func createPlayerSelector() *gtk.ComboBoxText {
 	currentPlayer := ""
 	onUpdate(func(metadata map[string]dbus.Variant) {
 		if currentPlayer == "" {
-			i, err := playerInstance.GetIdentity()
-			handleError(err)
-			currentPlayer = MPRIS_PREFIX + i
+			currentPlayer = playerInstance.GetName()
 			box.SetActiveID(currentPlayer)
 		}
 	})
