@@ -19,6 +19,7 @@ func createTitle() *gtk.Label {
 			displayTitle = "--"
 		}
 
+		titleLabel.SetTooltipText(displayTitle)
 		displayTitle = utils.EnforceSize(displayTitle, maxTitleSize)
 		titleLabel.SetText(displayTitle)
 	})

@@ -23,6 +23,7 @@ func createArtist() *gtk.Label {
 			displayArtist = "--"
 		}
 
+		artistLabel.SetTooltipText(displayArtist)
 		displayArtist = utils.EnforceSize(displayArtist, maxArtistSize)
 		artistLabel.SetText(displayArtist)
 	})
