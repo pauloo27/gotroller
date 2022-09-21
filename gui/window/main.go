@@ -67,6 +67,7 @@ func StartGUI() {
 	infoContainer.PackStart(createPlayerSelector(), false, false, 0)
 
 	win.Add(mainContainer)
+	win.SetResizable(false)
 
 	go func() {
 		var err error
