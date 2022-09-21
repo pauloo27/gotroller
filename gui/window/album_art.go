@@ -28,10 +28,16 @@ func createAlbumArt() *gtk.Image {
 	handleError(err)
 
 	onUpdate(func(metadata map[string]dbus.Variant) {
+		rawAlbumName, ok := metadata["xesam:album"]
+		if ok {
+			albumImg.SetTooltipText(rawAlbumName.Value().(string))
+		}
+
 		rawArtURL, ok := metadata["mpris:artUrl"]
 		if !ok {
 			return
 		}
+
 		artURL := rawArtURL.Value().(string)
 		if httpRe.MatchString(artURL) {
 			go func() {
