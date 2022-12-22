@@ -42,7 +42,6 @@ func StartGUI() {
 	loadMaxSizes()
 
 	win.SetTitle("Gotroller")
-	win.SetPosition(gtk.WIN_POS_MOUSE)
 
 	_, err = win.Connect("destroy", func() {
 		fmt.Println("Closed")
