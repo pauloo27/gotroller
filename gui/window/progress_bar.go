@@ -19,7 +19,9 @@ func createProgressBar() *gtk.Scale {
 
 	updateValue := func() {
 		position, err := playerInstance.GetPosition()
-		handleError(err)
+		if err != nil {
+			return
+		}
 
 		expectedValue = position / duration
 		glib.IdleAdd(func() {

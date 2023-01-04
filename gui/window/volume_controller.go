@@ -43,7 +43,9 @@ func createVolumeController() *gtk.Box {
 
 	onUpdate(func(metadata map[string]dbus.Variant) {
 		volume, err := playerInstance.GetVolume()
-		handleError(err)
+		if err != nil {
+			return
+		}
 
 		expectedVolume = volume
 		glib.IdleAdd(func() {
