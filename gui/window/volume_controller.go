@@ -7,20 +7,19 @@ import (
 )
 
 func createVolumeItem() (*gtk.Box, *gtk.Scale) {
-	container, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
+	container, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	handleError(err)
 
-	volume, err := gtk.ScaleNewWithRange(gtk.ORIENTATION_VERTICAL, 0.0, 1.0, 0.01)
+	volume, err := gtk.ScaleNewWithRange(gtk.ORIENTATION_HORIZONTAL, 0.0, 1.0, 0.01)
 	handleError(err)
 
 	volume.SetDrawValue(false)
-	volume.SetInverted(true)
 
 	icon, err := gtk.ImageNewFromIconName("audio-volume-high", gtk.ICON_SIZE_BUTTON)
 	handleError(err)
 
-	container.PackStart(volume, true, true, 3)
-	container.PackEnd(icon, false, false, 3)
+	container.PackEnd(volume, true, true, 3)
+	container.PackStart(icon, false, false, 3)
 
 	return container, volume
 }

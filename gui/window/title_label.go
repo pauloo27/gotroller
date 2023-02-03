@@ -22,6 +22,9 @@ func createTitle() *gtk.Label {
 		titleLabel.SetTooltipText(displayTitle)
 		displayTitle = utils.EnforceSize(displayTitle, maxTitleSize)
 		titleLabel.SetText(displayTitle)
+		ctx, err := titleLabel.GetStyleContext()
+		handleError(err)
+		ctx.AddClass("title")
 	})
 	return titleLabel
 }

@@ -26,6 +26,9 @@ func createArtist() *gtk.Label {
 		artistLabel.SetTooltipText(displayArtist)
 		displayArtist = utils.EnforceSize(displayArtist, maxArtistSize)
 		artistLabel.SetText(displayArtist)
+		ctx, err := artistLabel.GetStyleContext()
+		handleError(err)
+		ctx.AddClass("artist")
 	})
 
 	return artistLabel

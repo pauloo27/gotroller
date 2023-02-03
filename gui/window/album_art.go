@@ -16,7 +16,7 @@ var albumImg *gtk.Image
 var httpRe = regexp.MustCompile(`^https?:\/\/`)
 
 func setAlbumImage(path string) {
-	imagePix, err := gdk.PixbufNewFromFileAtSize(path, -1, HEIGHT)
+	imagePix, err := gdk.PixbufNewFromFileAtSize(path, -1, WIDTH)
 	handleError(err)
 
 	albumImg.SetFromPixbuf(imagePix)
@@ -26,6 +26,8 @@ func createAlbumArt() *gtk.Image {
 	var err error
 	albumImg, err = gtk.ImageNew()
 	handleError(err)
+
+	albumImg.SetSizeRequest(WIDTH, WIDTH)
 
 	onUpdate(func(metadata map[string]dbus.Variant) {
 		rawAlbumName, ok := metadata["xesam:album"]

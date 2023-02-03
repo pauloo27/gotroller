@@ -65,5 +65,7 @@ func createControllers() *gtk.Box {
 	container.PackStart(next, false, false, 0)
 	container.SetHAlign(gtk.ALIGN_CENTER)
 
+	playPause.GrabFocus()
+
 	return container
 }
