@@ -1,34 +1,19 @@
 package polybar
 
 import (
-	"errors"
 	"fmt"
 	"html"
 	"os"
-	"path"
 	"strings"
 
 	"github.com/Pauloo27/go-mpris"
 	"github.com/Pauloo27/gotroller"
 	"github.com/Pauloo27/gotroller/cli/utils"
-	"github.com/fsnotify/fsnotify"
-	"github.com/godbus/dbus/v5"
-	"github.com/joho/godotenv"
 )
 
 var (
-	maxTitleSize  int
-	maxArtistSize int
+	maxTitleSize, maxArtistSize int
 )
-
-func loadMaxSizes() {
-	home, err := os.UserHomeDir()
-	if err == nil {
-		godotenv.Load(path.Join(home, ".config", "gotroller.env"))
-	}
-	maxTitleSize = utils.AtoiOrDefault(os.Getenv("GOTROLLER_MAX_TITLE_SIZE"), 30)
-	maxArtistSize = utils.AtoiOrDefault(os.Getenv("GOTROLLER_MAX_ARTIST_SIZE"), 20)
-}
 
 func handleError(err error, message string) {
 	if err != nil {
@@ -42,48 +27,8 @@ func gotrollerCLI(command string) string {
 }
 
 func startMainLoop(playerSelectCommand string) {
-	player, err := gotroller.GetBestPlayer()
-	if err != nil {
-		if errors.Is(err, gotroller.ErrDisabled{}) {
-			playerSelectorAction := ActionButton{LEFT_CLICK, gotroller.MENU, playerSelectCommand}
-			fmt.Printf("%s\n", playerSelectorAction.String())
-			return
-		}
-		handleError(err, "Cannot get best player")
-	}
-	if player == nil {
-		fmt.Println("Nothing playing...")
-		return
-	}
-
-	update := func() {
-		printToPolybar(playerSelectCommand, player)
-	}
-
-	update()
-	mprisCh := make(chan *dbus.Signal)
-	err = player.OnSignal(mprisCh)
-	handleError(err, "Cannot listen to mpris signals")
-
-	preferedPlayerCh := make(chan fsnotify.Event)
-	gotroller.ListenToChanges(preferedPlayerCh)
-
-	go func() {
-		for range preferedPlayerCh {
-			// prefered player changed
-			os.Exit(0)
-		}
-	}()
-
-	for sig := range mprisCh {
-		if sig.Name == "org.freedesktop.DBus.NameOwnerChanged" {
-			// player exitted
-			if len(sig.Body) == 3 && sig.Body[0] == "org.mpris.MediaPlayer2.mpv" {
-				os.Exit(0)
-			}
-		}
-		update()
-	}
+	maxTitleSize, maxArtistSize = utils.LoadMaxSizes()
+	utils.StartMainLoop(Polybar{})
 }
 
 func printToPolybar(playerSelectCommand string, player *mpris.Player) {

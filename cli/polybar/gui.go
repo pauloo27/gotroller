@@ -1,6 +1,8 @@
 package polybar
 
+import "github.com/Pauloo27/gotroller/cli/utils"
+
 func WithGUI() {
-	loadMaxSizes()
+	utils.LoadMaxSizes()
 	startMainLoop("gotroller-gui")
 }
