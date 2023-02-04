@@ -18,8 +18,9 @@ func (Polybar) HandleError(err error, message string) {
 	handleError(err, message)
 }
 
-func (Polybar) HandleNothingPlaying() {
+func (Polybar) HandleNothingPlaying() (shouldExit bool) {
 	fmt.Println("Nothing playing")
+	return true
 }
 
 func (p Polybar) PrintDisabled() {

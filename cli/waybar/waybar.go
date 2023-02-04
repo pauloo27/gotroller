@@ -12,6 +12,8 @@ import (
 
 var (
 	maxTitleSize, maxArtistSize int
+
+	lastLine string
 )
 
 func Start() {
@@ -29,8 +31,9 @@ func (Waybar) HandleError(err error, message string) {
 	handleError(err, message)
 }
 
-func (Waybar) HandleNothingPlaying() {
+func (Waybar) HandleNothingPlaying() (shouldExit bool) {
 	fmt.Println("Nothing playing")
+	return false
 }
 
 func (Waybar) PrintDisabled() {
@@ -69,6 +72,11 @@ func (Waybar) Update(player *mpris.Player) {
 		}
 	}
 
+	if title == "" && artist == "" {
+		fmt.Println("Nothing playing")
+		return
+	}
+
 	fullTitle := utils.EnforceSize(title, maxTitleSize)
 	if artist != "" {
 		fullTitle += " from " + utils.EnforceSize(artist, maxArtistSize)
@@ -77,11 +85,15 @@ func (Waybar) Update(player *mpris.Player) {
 	// we need to decode them
 	fullTitle = html.UnescapeString(fullTitle)
 
-	fmt.Printf("%s %s \n",
+	line := fmt.Sprintf("%s %s",
 		icon,
 		fullTitle,
 	)
 
+	if line != lastLine {
+		fmt.Println(line)
+	}
+	lastLine = line
 }
 
 func handleError(err error, message string) {

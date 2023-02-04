@@ -3,6 +3,8 @@ package utils
 import (
 	"errors"
 	"os"
+	"sync"
+	"time"
 
 	"github.com/Pauloo27/go-mpris"
 	"github.com/Pauloo27/gotroller"
@@ -13,27 +15,47 @@ import (
 type BarAdapter interface {
 	PrintDisabled()
 	HandleError(error, string)
-	HandleNothingPlaying()
+	HandleNothingPlaying() (shouldExit bool)
 	Update(*mpris.Player)
 }
 
 func StartMainLoop(bar BarAdapter) {
-	player, err := gotroller.GetBestPlayer()
-	if err != nil {
-		if errors.Is(err, gotroller.ErrDisabled{}) {
-			bar.PrintDisabled()
-			return
-		}
-		bar.HandleError(err, "Cannot get best player")
+	player := mustGetPlayer(bar)
+
+	lastUpdateRequest := 0
+	updateRequestLock := sync.Mutex{}
+
+	scheduleUpdate := func() {
+		updateRequestLock.Lock()
+		defer updateRequestLock.Unlock()
+		lastUpdateRequest++
+		curRequest := lastUpdateRequest
+		go func() {
+			time.Sleep(100 * time.Millisecond)
+			if lastUpdateRequest != curRequest {
+				return
+			}
+			bar.Update(player)
+		}()
 	}
+
 	if player == nil {
-		bar.HandleNothingPlaying()
-		return
+		shouldExit := bar.HandleNothingPlaying()
+		if shouldExit {
+			os.Exit(0)
+		}
+		for {
+			time.Sleep(time.Second)
+			player = mustGetPlayer(bar)
+			if player != nil {
+				break
+			}
+		}
 	}
 
 	bar.Update(player)
 	mprisCh := make(chan *dbus.Signal)
-	err = player.OnSignal(mprisCh)
+	err := player.OnSignal(mprisCh)
 	bar.HandleError(err, "Cannot listen to mpris signals")
 
 	preferedPlayerCh := make(chan fsnotify.Event)
@@ -53,6 +75,18 @@ func StartMainLoop(bar BarAdapter) {
 				os.Exit(0)
 			}
 		}
-		bar.Update(player)
+		scheduleUpdate()
 	}
+}
+
+func mustGetPlayer(bar BarAdapter) *mpris.Player {
+	player, err := gotroller.GetBestPlayer()
+	if err != nil {
+		if errors.Is(err, gotroller.ErrDisabled{}) {
+			bar.PrintDisabled()
+			os.Exit(0)
+		}
+		bar.HandleError(err, "Cannot get best player")
+	}
+	return player
 }
