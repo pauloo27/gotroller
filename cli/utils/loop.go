@@ -31,7 +31,7 @@ func StartMainLoop(bar BarAdapter) {
 		lastUpdateRequest++
 		curRequest := lastUpdateRequest
 		go func() {
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(300 * time.Millisecond)
 			if lastUpdateRequest != curRequest {
 				return
 			}
@@ -49,6 +49,7 @@ func StartMainLoop(bar BarAdapter) {
 			player = mustGetPlayer(bar)
 			if player != nil {
 				break
+
 			}
 		}
 	}
@@ -68,13 +69,7 @@ func StartMainLoop(bar BarAdapter) {
 		}
 	}()
 
-	for sig := range mprisCh {
-		if sig.Name == "org.freedesktop.DBus.NameOwnerChanged" {
-			// player exitted
-			if len(sig.Body) == 3 && sig.Body[0] == "org.mpris.MediaPlayer2.mpv" {
-				os.Exit(0)
-			}
-		}
+	for range mprisCh {
 		scheduleUpdate()
 	}
 }

@@ -1,8 +1,10 @@
 package waybar
 
 import (
+	"encoding/json"
 	"fmt"
 	"html"
+	"os"
 	"strings"
 
 	"github.com/Pauloo27/go-mpris"
@@ -32,17 +34,19 @@ func (Waybar) HandleError(err error, message string) {
 }
 
 func (Waybar) HandleNothingPlaying() (shouldExit bool) {
-	fmt.Println("Nothing playing")
+	printToWaybar("Silence", "")
 	return false
 }
 
 func (Waybar) PrintDisabled() {
-	fmt.Println("Disabled")
+	printToWaybar("Disabled", "")
 }
 
 func (Waybar) Update(player *mpris.Player) {
 	metadata, err := player.GetMetadata()
-	handleError(err, "Cannot get player metadata")
+	if err != nil {
+		return
+	}
 
 	status, err := player.GetPlaybackStatus()
 	handleError(err, "Cannot get playback status")
@@ -73,7 +77,7 @@ func (Waybar) Update(player *mpris.Player) {
 	}
 
 	if title == "" && artist == "" {
-		fmt.Println("Nothing playing")
+		printToWaybar("Nothing playing", "")
 		return
 	}
 
@@ -81,23 +85,36 @@ func (Waybar) Update(player *mpris.Player) {
 	if artist != "" {
 		fullTitle += " from " + utils.EnforceSize(artist, maxArtistSize)
 	}
-	// since lainon.life radios' uses HTML notation in the "japanese" chars
-	// we need to decode them
-	fullTitle = html.UnescapeString(fullTitle)
 
 	line := fmt.Sprintf("%s %s",
 		icon,
 		fullTitle,
 	)
 
-	if line != lastLine {
-		fmt.Println(line)
-	}
-	lastLine = line
+	printToWaybar(line, fmt.Sprintf("%s from %s", title, artist))
 }
 
 func handleError(err error, message string) {
 	if err != nil {
-		fmt.Println(message)
+		printToWaybar(message, "")
 	}
+}
+
+func printToWaybar(line, tooltip string) {
+	line = html.EscapeString(line)
+	tooltip = html.EscapeString(tooltip)
+
+	if line != lastLine {
+		data := map[string]string{
+			"text":    line,
+			"tooltip": tooltip,
+		}
+		rawJSON, err := json.Marshal(data)
+		if err != nil {
+			fmt.Println("Cannot marshal data")
+			os.Exit(-1)
+		}
+		fmt.Println(string(rawJSON))
+	}
+	lastLine = line
 }
