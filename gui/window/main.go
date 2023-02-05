@@ -60,18 +60,18 @@ func StartGUI() {
 	mainContainer, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 1)
 	handleError(err)
 
-	infoContainer, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 1)
+	infoContainer, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 5)
 	handleError(err)
 
 	mainContainer.PackStart(createAlbumArt(), false, true, 0)
-	mainContainer.PackStart(infoContainer, true, true, 1)
+	mainContainer.PackStart(infoContainer, true, true, 10)
 
 	infoContainer.PackStart(createTitle(), false, false, 0)
 	infoContainer.PackStart(createArtist(), false, false, 0)
 	infoContainer.PackStart(createProgressBar(), false, false, 0)
 	infoContainer.PackStart(createControllers(), false, false, 0)
 	//infoContainer.PackStart(createVolumeController(), false, false, 0)
-	infoContainer.PackStart(createPlayerSelector(), false, false, 5)
+	infoContainer.PackStart(createPlayerSelector(), false, false, 0)
 
 	win.Add(mainContainer)
 	win.SetResizable(false)
