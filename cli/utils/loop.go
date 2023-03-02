@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"sync"
 	"time"
@@ -20,6 +21,12 @@ type BarAdapter interface {
 }
 
 func StartMainLoop(bar BarAdapter) {
+	for {
+		handlePlayer(bar)
+	}
+}
+
+func handlePlayer(bar BarAdapter) {
 	player := mustGetPlayer(bar)
 
 	lastUpdateRequest := 0
@@ -49,7 +56,6 @@ func StartMainLoop(bar BarAdapter) {
 			player = mustGetPlayer(bar)
 			if player != nil {
 				break
-
 			}
 		}
 	}
@@ -62,15 +68,19 @@ func StartMainLoop(bar BarAdapter) {
 	preferedPlayerCh := make(chan fsnotify.Event)
 	gotroller.ListenToChanges(preferedPlayerCh)
 
-	go func() {
-		for range preferedPlayerCh {
-			// prefered player changed
-			os.Exit(0)
+	for {
+		select {
+		case sig := <-mprisCh:
+			if sig.Name == "org.freedesktop.DBus.NameOwnerChanged" {
+				if len(sig.Body) == 3 {
+					// player (maybe) exited
+					return
+				}
+			}
+			scheduleUpdate()
+		case <-preferedPlayerCh:
+			return
 		}
-	}()
-
-	for range mprisCh {
-		scheduleUpdate()
 	}
 }
 
