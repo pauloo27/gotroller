@@ -70,9 +70,8 @@ func handlePlayer(bar BarAdapter) {
 	for {
 		select {
 		case sig := <-mprisCh:
-			if sig.Name == "org.freedesktop.DBus.NameOwnerChanged" {
-				if len(sig.Body) == 3 {
-					// player (maybe) exited
+			if sig.Name == "org.freedesktop.DBus.NameOwnerChanged" && len(sig.Body) == 3 {
+				if sig.Body[0] == player.GetName() {
 					return
 				}
 			}
