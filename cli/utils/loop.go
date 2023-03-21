@@ -12,6 +12,10 @@ import (
 	"github.com/godbus/dbus/v5"
 )
 
+var (
+	mprisCh chan *dbus.Signal
+)
+
 type BarAdapter interface {
 	PrintDisabled()
 	HandleError(error, string)
@@ -60,9 +64,11 @@ func handlePlayer(bar BarAdapter) {
 	}
 
 	bar.Update(player)
-	mprisCh := make(chan *dbus.Signal)
-	err := player.OnSignal(mprisCh)
-	bar.HandleError(err, "Cannot listen to mpris signals")
+	if mprisCh == nil {
+		mprisCh = make(chan *dbus.Signal)
+		err := player.OnSignal(mprisCh)
+		bar.HandleError(err, "Cannot listen to mpris signals")
+	}
 
 	preferedPlayerCh := make(chan fsnotify.Event)
 	gotroller.ListenToChanges(preferedPlayerCh)
