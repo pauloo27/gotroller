@@ -6,31 +6,17 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-func createVolumeItem() (*gtk.Box, *gtk.Scale) {
-	container, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
-	handleError(err)
-
-	volume, err := gtk.ScaleNewWithRange(gtk.ORIENTATION_HORIZONTAL, 0.0, 1.0, 0.01)
-	handleError(err)
-
-	volume.SetDrawValue(false)
-
-	icon, err := gtk.ImageNewFromIconName("audio-volume-high", gtk.ICON_SIZE_BUTTON)
-	handleError(err)
-
-	container.PackEnd(volume, true, true, 3)
-	container.PackStart(icon, false, false, 3)
-
-	return container, volume
-}
-
 func createVolumeController() *gtk.Box {
 	mainContainer, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
 	handleError(err)
 
-	container, playerVolume := createVolumeItem()
-	mainContainer.PackStart(container, true, true, 0)
+	playerVolume, err := gtk.ScaleNewWithRange(gtk.ORIENTATION_VERTICAL, 0.0, 1.0, 0.01)
+	handleError(err)
+	playerVolume.SetInverted(true)
 
+	mainContainer.PackStart(playerVolume, true, true, 0)
+
+	playerVolume.SetDrawValue(false)
 	expectedVolume := 0.0
 
 	playerVolume.Connect("value-changed", func() {

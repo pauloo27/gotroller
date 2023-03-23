@@ -70,8 +70,6 @@ func StartGUI() {
 	infoContainer.PackStart(createArtist(), false, false, 0)
 	infoContainer.PackStart(createProgressBar(), false, false, 0)
 	infoContainer.PackStart(createControllers(), false, false, 0)
-	//infoContainer.PackStart(createVolumeController(), false, false, 0)
-	//infoContainer.PackStart(createPlayerSelector(), false, false, 0)
 
 	win.Add(mainContainer)
 	win.SetResizable(false)

@@ -13,7 +13,7 @@ func loadIcon(name string) *gtk.Image {
 }
 
 func createControllers() *gtk.Box {
-	container, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 5)
+	container, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 10)
 	handleError(err)
 
 	prev, err := gtk.ButtonNewFromIconName("media-seek-backward", gtk.ICON_SIZE_BUTTON)
@@ -60,6 +60,20 @@ func createControllers() *gtk.Box {
 		}
 	})
 
+	volumeBtn, err := gtk.ButtonNewFromIconName("audio-volume-high", gtk.ICON_SIZE_BUTTON)
+	handleError(err)
+
+	createVolumePopover(volumeBtn)
+
+	container.PackStart(volumeBtn, false, false, 0)
+
+	moreBtn, err := gtk.ButtonNewFromIconName("view-more-symbolic", gtk.ICON_SIZE_BUTTON)
+	handleError(err)
+
+	createMorePopover(moreBtn)
+
+	container.PackEnd(moreBtn, false, false, 0)
+
 	container.PackStart(prev, false, false, 0)
 	container.PackStart(playPause, false, false, 0)
 	container.PackStart(next, false, false, 0)
@@ -68,4 +82,67 @@ func createControllers() *gtk.Box {
 	playPause.GrabFocus()
 
 	return container
+}
+
+func createMorePopover(relative *gtk.Button) *gtk.Popover {
+	popover, err := gtk.PopoverNew(relative)
+	handleError(err)
+
+	mainContainer, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 5)
+	handleError(err)
+
+	buttonContainer, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 5)
+	handleError(err)
+
+	buttonLoop, err := gtk.ButtonNewFromIconName("media-playlist-repeat", gtk.ICON_SIZE_BUTTON)
+	handleError(err)
+
+	buttonShuffle, err := gtk.ButtonNewFromIconName("media-playlist-shuffle", gtk.ICON_SIZE_BUTTON)
+	handleError(err)
+
+	buttonRaisePlayer, err := gtk.ButtonNewFromIconName("go-up", gtk.ICON_SIZE_BUTTON)
+	handleError(err)
+
+	buttonContainer.PackStart(buttonLoop, false, false, 0)
+	buttonContainer.PackStart(buttonShuffle, false, false, 0)
+	buttonContainer.PackStart(buttonRaisePlayer, false, false, 0)
+
+	mainContainer.SetMarginEnd(5)
+	mainContainer.SetMarginStart(5)
+	mainContainer.SetMarginTop(5)
+	mainContainer.SetMarginBottom(5)
+
+	mainContainer.PackStart(buttonContainer, false, false, 0)
+	mainContainer.PackStart(createPlayerSelector(), false, false, 0)
+
+	popover.Add(mainContainer)
+	mainContainer.ShowAll()
+
+	popover.SetPosition(gtk.POS_TOP)
+
+	relative.Connect("clicked", func() {
+		popover.SetVisible(!popover.GetVisible())
+	})
+
+	return popover
+}
+
+func createVolumePopover(relative *gtk.Button) *gtk.Popover {
+	popover, err := gtk.PopoverNew(relative)
+	handleError(err)
+
+	container := createVolumeController()
+	popover.Add(container)
+	container.ShowAll()
+
+	width, height := container.GetSizeRequest()
+	container.SetSizeRequest(width, height+100)
+
+	popover.SetPosition(gtk.POS_TOP)
+
+	relative.Connect("clicked", func() {
+		popover.SetVisible(!popover.GetVisible())
+	})
+
+	return popover
 }
