@@ -17,7 +17,7 @@ func EnforceSize(text string, maxLen int) string {
 		return ""
 	}
 
-	return text[0:maxLen-3] + "..."
+	return text[0:maxLen-5] + "…"
 }
 
 func AtoiOrDefault(str string, defaultValue int) int {
