@@ -7,5 +7,5 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/godbus/dbus/v5 v5.0.3
 	github.com/gotk3/gotk3 v0.5.3-0.20210223154815-289cfb6dbf32
-	github.com/joho/godotenv v1.3.0 // indirect
+	github.com/joho/godotenv v1.5.1
 )
