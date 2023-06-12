@@ -103,6 +103,13 @@ func createMorePopover(relative *gtk.Button) *gtk.Popover {
 	buttonRaisePlayer, err := gtk.ButtonNewFromIconName("go-up", gtk.ICON_SIZE_BUTTON)
 	handleError(err)
 
+	buttonRaisePlayer.Connect("clicked", func() {
+		if playerInstance == nil {
+			return
+		}
+		_ = playerInstance.Raise()
+	})
+
 	buttonContainer.PackStart(buttonLoop, false, false, 0)
 	buttonContainer.PackStart(buttonShuffle, false, false, 0)
 	buttonContainer.PackStart(buttonRaisePlayer, false, false, 0)
