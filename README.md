@@ -6,7 +6,11 @@ _wrote in go btw._
 
 ![screenshot](https://i.imgur.com/YJ0pMbG.png)
 
-![screenshot of the gui](https://i.imgur.com/HrEGG2E.png)
+_polybar module_
+
+![screenshot of the gui](https://i.imgur.com/uRI5Gos.png)
+
+_waybar module + gui_
 
 ## Features
 
