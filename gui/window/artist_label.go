@@ -3,7 +3,7 @@ package window
 import (
 	"strings"
 
-	"github.com/Pauloo27/gotroller/cli/utils"
+	"github.com/pauloo27/gotroller/cli/utils"
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/gtk"
 )

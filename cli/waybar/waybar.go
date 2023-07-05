@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Pauloo27/go-mpris"
-	"github.com/Pauloo27/gotroller"
-	"github.com/Pauloo27/gotroller/cli/utils"
+	"github.com/pauloo27/go-mpris"
+	"github.com/pauloo27/gotroller"
+	"github.com/pauloo27/gotroller/cli/utils"
 )
 
 var (

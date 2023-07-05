@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Pauloo27/go-mpris"
-	"github.com/Pauloo27/gotroller"
+	"github.com/pauloo27/go-mpris"
+	"github.com/pauloo27/gotroller"
 	"github.com/fsnotify/fsnotify"
 	"github.com/godbus/dbus/v5"
 )

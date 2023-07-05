@@ -3,7 +3,7 @@ package gotroller
 import (
 	"fmt"
 
-	"github.com/Pauloo27/go-mpris"
+	"github.com/pauloo27/go-mpris"
 	"github.com/godbus/dbus/v5"
 )
 

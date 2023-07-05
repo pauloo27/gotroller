@@ -6,9 +6,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/Pauloo27/go-mpris"
-	"github.com/Pauloo27/gotroller"
-	"github.com/Pauloo27/gotroller/cli/utils"
+	"github.com/pauloo27/go-mpris"
+	"github.com/pauloo27/gotroller"
+	"github.com/pauloo27/gotroller/cli/utils"
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"

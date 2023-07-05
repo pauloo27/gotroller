@@ -1,6 +1,6 @@
 package polybar
 
-import "github.com/Pauloo27/gotroller/cli/utils"
+import "github.com/pauloo27/gotroller/cli/utils"
 
 func WithGUI() {
 	utils.LoadMaxSizes()

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Pauloo27/gotroller/gui/window"
+	"github.com/pauloo27/gotroller/gui/window"
 )
 
 func main() {

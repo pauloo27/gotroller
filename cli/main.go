@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Pauloo27/go-mpris"
-	"github.com/Pauloo27/gotroller"
-	"github.com/Pauloo27/gotroller/cli/dmenu"
-	"github.com/Pauloo27/gotroller/cli/operation"
-	"github.com/Pauloo27/gotroller/cli/polybar"
-	"github.com/Pauloo27/gotroller/cli/waybar"
+	"github.com/pauloo27/go-mpris"
+	"github.com/pauloo27/gotroller"
+	"github.com/pauloo27/gotroller/cli/dmenu"
+	"github.com/pauloo27/gotroller/cli/operation"
+	"github.com/pauloo27/gotroller/cli/polybar"
+	"github.com/pauloo27/gotroller/cli/waybar"
 )
 
 type Mode func()

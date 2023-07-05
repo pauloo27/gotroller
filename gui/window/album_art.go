@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/Pauloo27/gotroller/gui/downloader"
+	"github.com/pauloo27/gotroller/gui/downloader"
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
