@@ -1,6 +1,7 @@
 package window
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/godbus/dbus/v5"
@@ -13,6 +14,49 @@ func createProgressBar() *gtk.Scale {
 	handleError(err)
 
 	scale.SetDrawValue(false)
+
+	scale.SetTooltipText(fmt.Sprintf(
+		"%s | %s",
+		"00:00", "00:00",
+	))
+
+	go func() {
+		for {
+			time.Sleep(1 * time.Second)
+
+			positionInSec, err := playerInstance.GetPosition()
+			if err != nil {
+				continue
+			}
+
+			position := time.Duration(positionInSec) * time.Second
+
+			positionFormatted := fmt.Sprintf(
+				"%02d:%02d",
+				int(position.Minutes()),
+				int(position.Seconds())%60,
+			)
+
+			durationInSec, err := playerInstance.GetLength()
+			if err != nil {
+				continue
+			}
+
+			duration := time.Duration(durationInSec) * time.Second
+			durationFormatted := fmt.Sprintf(
+				"%02d:%02d",
+				int(duration.Minutes()),
+				int(duration.Seconds())%60,
+			)
+
+			glib.IdleAdd(func() {
+				scale.SetTooltipText(fmt.Sprintf(
+					"%s | %s",
+					positionFormatted, durationFormatted,
+				))
+			})
+		}
+	}()
 
 	duration := 0.0
 	expectedValue := 0.0
