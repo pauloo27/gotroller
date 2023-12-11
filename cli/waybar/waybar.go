@@ -96,18 +96,24 @@ func (Waybar) Update(player *mpris.Player) {
 		fullTitle,
 	)
 
-	lineBreak := "\n"
+	format := os.Getenv("GOTROLLER_WAYBAR_TOOLTIP_FORMAT")
 
-	printToWaybarFormatted(
-		html.EscapeString(line),
-		fmt.Sprintf(
-			`<big><span color="#fab387">%s</span> by <span color="#fab387">%s</span></big>%sFrom the album <span color="#fab387">%s</span>`,
-			html.EscapeString(title),
-			html.EscapeString(artist),
-			lineBreak,
-			html.EscapeString(album),
-		),
-	)
+	if format == "" {
+		printToWaybar(line, fmt.Sprintf("%s by %s", title, artist))
+	} else {
+		lineBreak := "\n"
+		printToWaybarFormatted(
+			html.EscapeString(line),
+			fmt.Sprintf(
+				format,
+				html.EscapeString(title),
+				html.EscapeString(artist),
+				lineBreak,
+				html.EscapeString(album),
+			),
+		)
+	}
+
 }
 
 func handleError(err error, message string) {
