@@ -76,6 +76,11 @@ func (Waybar) Update(player *mpris.Player) {
 		}
 	}
 
+	var album string
+	if rawAlbum, ok := metadata["xesam:album"]; ok {
+		album = rawAlbum.Value().(string)
+	}
+
 	if title == "" && artist == "" {
 		printToWaybar("Nothing playing", "")
 		return
@@ -83,7 +88,7 @@ func (Waybar) Update(player *mpris.Player) {
 
 	fullTitle := utils.EnforceSize(title, maxTitleSize)
 	if artist != "" {
-		fullTitle += " from " + utils.EnforceSize(artist, maxArtistSize)
+		fullTitle += " by " + utils.EnforceSize(artist, maxArtistSize)
 	}
 
 	line := fmt.Sprintf("%s %s",
@@ -91,7 +96,18 @@ func (Waybar) Update(player *mpris.Player) {
 		fullTitle,
 	)
 
-	printToWaybar(line, fmt.Sprintf("%s from %s", title, artist))
+	lineBreak := "\n"
+
+	printToWaybarFormatted(
+		html.EscapeString(line),
+		fmt.Sprintf(
+			`<big><span color="#fab387">%s</span> by <span color="#fab387">%s</span></big>%sFrom the album <span color="#fab387">%s</span>`,
+			html.EscapeString(title),
+			html.EscapeString(artist),
+			lineBreak,
+			html.EscapeString(album),
+		),
+	)
 }
 
 func handleError(err error, message string) {
@@ -104,6 +120,22 @@ func printToWaybar(line, tooltip string) {
 	line = html.EscapeString(line)
 	tooltip = html.EscapeString(tooltip)
 
+	if line != lastLine {
+		data := map[string]string{
+			"text":    line,
+			"tooltip": tooltip,
+		}
+		rawJSON, err := json.Marshal(data)
+		if err != nil {
+			fmt.Println("Cannot marshal data")
+			os.Exit(-1)
+		}
+		fmt.Println(string(rawJSON))
+	}
+	lastLine = line
+}
+
+func printToWaybarFormatted(line, tooltip string) {
 	if line != lastLine {
 		data := map[string]string{
 			"text":    line,
