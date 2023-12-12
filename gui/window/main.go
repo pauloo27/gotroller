@@ -6,19 +6,19 @@ import (
 	"os"
 	"path"
 
-	"github.com/pauloo27/go-mpris"
-	"github.com/pauloo27/gotroller"
-	"github.com/pauloo27/gotroller/cli/utils"
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/joho/godotenv"
+	"github.com/pauloo27/go-mpris"
+	"github.com/pauloo27/gotroller"
+	"github.com/pauloo27/gotroller/cli/utils"
 )
 
 const (
-	HEIGHT = 150
-	WIDTH  = HEIGHT + 100
+	HEIGHT = 300
+	WIDTH  = 250
 )
 
 var (

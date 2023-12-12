@@ -5,11 +5,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/pauloo27/gotroller/gui/downloader"
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/pauloo27/gotroller/gui/downloader"
 )
 
 var albumImg *gtk.Image
